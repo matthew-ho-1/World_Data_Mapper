@@ -35,8 +35,8 @@ const Login = (props) => {
 
 
 	return (
-		<WModal className="login-modal" cover="true" visible={props.setShowLogin}>
-			<WMHeader  className="modal-header" onClose={() => props.setShowLogin(false)}>
+		<WModal className="login-modal" cover="true" visible={props.setShowLogin} style = {{backgroundColor: "#25557a"}}>
+			<WMHeader  className="modal-header" onClose={() => props.setShowLogin(false)} style = {{fontWeight: "bold"}}>
 				Login
 			</WMHeader >
 
@@ -58,7 +58,7 @@ const Login = (props) => {
 					</WMMain >
 			}
 			<WMFooter>
-				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" style = {{backgroundColor: "#078cf2"}}>
 					Login
 				</WButton>
 			</WMFooter>

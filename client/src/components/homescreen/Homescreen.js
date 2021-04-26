@@ -1,11 +1,11 @@
 import Logo 							from '../navbar/Logo';
+import EarthPic							from '../Pictures/earth.jpg'
 import Login 							from '../modals/Login';
 import Delete 							from '../modals/Delete';
-import MainContents 					from '../main/MainContents';
 import CreateAccount 					from '../modals/CreateAccount';
+import UpdateAccount					from '../modals/UpdateAccount';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import * as mutations 					from '../../cache/mutations';
-import SidebarContents 					from '../sidebar/SidebarContents';
 import { GET_DB_TODOS } 				from '../../cache/queries';
 import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
@@ -34,6 +34,7 @@ const Homescreen = (props) => {
 	document.onkeydown = keyCombination;
 
 	const auth = props.user === null ? false : true;
+	const userName = props.user !== null ? props.user.firstName + " " + props.user.lastName : "";
 	let todolists 	= [];
 	let SidebarData = [];
 	const [sortRule, setSortRule] = useState('unsorted'); // 1 is ascending, -1 desc
@@ -41,6 +42,7 @@ const Homescreen = (props) => {
 	const [showDelete, toggleShowDelete] 	= useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
 	const [showCreate, toggleShowCreate] 	= useState(false);
+	const [showUpdate, toggleShowUpdate] 	= useState(false);
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 
@@ -207,20 +209,30 @@ const Homescreen = (props) => {
 	const setShowLogin = () => {
 		toggleShowDelete(false);
 		toggleShowCreate(false);
+		toggleShowUpdate(false);
 		toggleShowLogin(!showLogin);
 	};
 
 	const setShowCreate = () => {
 		toggleShowDelete(false);
 		toggleShowLogin(false);
+		toggleShowUpdate(false);
 		toggleShowCreate(!showCreate);
 	};
 
 	const setShowDelete = () => {
 		toggleShowCreate(false);
 		toggleShowLogin(false);
+		toggleShowUpdate(false);
 		toggleShowDelete(!showDelete)
 	};
+
+	const setShowUpdate = () => {
+		toggleShowCreate(false);
+		toggleShowLogin(false);
+		toggleShowDelete(false);
+		toggleShowUpdate(!showUpdate)
+	}
 	
 	const sort = (criteria) => {
 		let prevSortRule = sortRule;
@@ -229,11 +241,10 @@ const Homescreen = (props) => {
 		console.log(transaction)
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-		
 	}
 
 	return (
-		<WLayout wLayout="header-lside">
+		<WLayout wLayout="header">
 			<WLHeader>
 				<WNavbar color="colored">
 					<ul>
@@ -246,43 +257,22 @@ const Homescreen = (props) => {
 							fetchUser={props.fetchUser} 	auth={auth} 
 							setShowCreate={setShowCreate} 	setShowLogin={setShowLogin}
 							reloadTodos={refetch} 			setActiveList={loadTodoList}
+							getUser = {userName}			setShowUpdate = {setShowUpdate}
 						/>
 					</ul>
 				</WNavbar>
 			</WLHeader>
-
-			<WLSide side="left">
-				<WSidebar>
-					{
-						activeList ? 
-							<SidebarContents
-								listIDs={SidebarData} 				activeid={activeList._id} auth={auth}
-								handleSetActive={handleSetActive} 	createNewList={createNewList}
-								updateListField={updateListField} 	key={activeList._id}
-							/>
-							:
-							<></>
-					}
-				</WSidebar>
-			</WLSide>
-			<WLMain>
-				{
-					activeList ? 
-					
-							<div className="container-secondary">
-								<MainContents
-									addItem={addItem} 				deleteItem={deleteItem}
-									editItem={editItem} 			reorderItem={reorderItem}
-									setShowDelete={setShowDelete} 	undo={tpsUndo} redo={tpsRedo}
-									activeList={activeList} 		setActiveList={loadTodoList}
-									canUndo={canUndo} 				canRedo={canRedo}
-									sort={sort}
-								/>
-							</div>
-						:
-							<div className="container-secondary" />
-				}
-
+			
+			<WLMain style = {{backgroundColor: "#32599c"}}>
+			{
+				auth ? 
+				<div className = "welcome-text"/>
+				:
+				<div className = "welcome-text">
+					<p>Welcome to The World Data Mapper.</p>
+					<img src = {EarthPic}  alt = "Earth Picture" style = {{width: "400px", height: "400px"}}></img>
+				</div>
+			}
 			</WLMain>
 
 			{
@@ -297,6 +287,9 @@ const Homescreen = (props) => {
 				showLogin && (<Login fetchUser={props.fetchUser} reloadTodos={refetch}setShowLogin={setShowLogin} />)
 			}
 
+			{
+				showUpdate && (<UpdateAccount fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} _id = {props.user._id}/>)
+			}
 		</WLayout>
 	);
 };

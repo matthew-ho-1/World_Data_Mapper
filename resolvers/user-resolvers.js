@@ -45,16 +45,6 @@ module.exports = {
 		register: async (_, args, { res }) => {
 			const { email, password, firstName, lastName } = args;
 			const alreadyRegistered = await User.findOne({email: email});
-			if(alreadyRegistered) {
-				console.log('User with that email already registered.');
-				return(new User({
-					_id: '',
-					firstName: '',
-					lastName: '',
-					email: 'already exists', 
-					password: '',
-					initials: ''}));
-			}
 			const hashed = await bcrypt.hash(password, 10);
 			const _id = new ObjectId();
 			const user = new User({
@@ -74,6 +64,20 @@ module.exports = {
 			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true}); 
 			return user;
 		},
+
+		/** 
+		@param 	 {object} args - registration info
+		@param 	 {object} res - response object containing the current access/refresh tokens  
+		@returns {Boolean} - whether or not it successfully updated
+		**/
+		update: async (_, args, { res }) => {
+			const { email, password, firstName, lastName, _id } = args;
+			const objectId = new ObjectId(_id);
+			const hashed = await bcrypt.hash(password, 10);
+			const updated = await User.updateOne({_id: objectId}, {$set: {firstName: firstName,lastName: lastName, email: email, password: hashed, initials: `${firstName[0]}.${lastName[0]}.`}});
+			return updated;
+		},
+
 		/** 
 			@param 	 {object} res - response object containing the current access/refresh tokens  
 			@returns {boolean} true 

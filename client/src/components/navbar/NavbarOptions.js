@@ -17,25 +17,32 @@ const LoggedIn = (props) => {
     };
 
     return (
+        <>
+        <WNavItem hoverAnimation="lighten">
+            <WButton className="navbar-options" onClick = {props.setShowUpdate} wType="texted" hoverAnimation="text-primary">
+                {props.getUser}
+            </WButton>
+        </WNavItem >
         <WNavItem hoverAnimation="lighten">
             <WButton className="navbar-options" onClick={handleLogout} wType="texted" hoverAnimation="text-primary">
                 Logout
             </WButton>
         </WNavItem >
+        </>
     );
 };
 
 const LoggedOut = (props) => {
     return (
         <>
-            <WNavItem hoverAnimation="lighten">
-                <WButton className="navbar-options" onClick={props.setShowLogin} wType="texted" hoverAnimation="text-primary">
-                    Login
+           <WNavItem hoverAnimation="lighten">
+                <WButton className="navbar-options" onClick={props.setShowCreate} wType="texted" hoverAnimation="text-primary"> 
+                    Create Account
                 </WButton>
             </WNavItem>
             <WNavItem hoverAnimation="lighten">
-                <WButton className="navbar-options" onClick={props.setShowCreate} wType="texted" hoverAnimation="text-primary"> 
-                    Sign Up 
+                <WButton className="navbar-options" onClick={props.setShowLogin} wType="texted" hoverAnimation="text-primary">
+                    Login
                 </WButton>
             </WNavItem>
         </>
@@ -47,8 +54,8 @@ const NavbarOptions = (props) => {
     return (
         <>
             {
-                props.auth === false ? <LoggedOut setShowLogin={props.setShowLogin} setShowCreate={props.setShowCreate} />
-                : <LoggedIn fetchUser={props.fetchUser} setActiveList={props.setActiveList} logout={props.logout} />
+                props.auth === false ? <LoggedOut setShowLogin={props.setShowLogin} setShowCreate={props.setShowCreate}/>
+                : <LoggedIn fetchUser={props.fetchUser} setActiveList={props.setActiveList} logout={props.logout} getUser = {props.getUser} setShowUpdate = {props.setShowUpdate}/>
             }
         </>
 

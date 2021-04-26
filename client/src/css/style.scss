@@ -1,7 +1,7 @@
 @use 'node_modules/wt-frontend/build/global/theme' with (
-    $primary-color: #ffc800,
+    $primary-color: #2224b3,
     $background-color: rgb(64, 69, 78),//#d9d6cc,
-    $navbar-background-color: #353a44,//rgb(64, 69, 78),
+    $navbar-background-color: green,//rgb(64, 69, 78),
     $sidebar-background-color: #2b2e36,//#353a44,
     $text-color: #e9edf0,
     $modal-background: rgb(64, 69, 78),
@@ -91,17 +91,20 @@ html, body {
 
 }
 
-
-
 .list-item-edit-input, .table-input {
     font-size: 1.125rem !important;
 }
 
+.welcome-text{
+    text-align: center; 
+    font-weight: bold;
+    font-size: 50px;
+}
+
 .logo {
-	color: $primary-color;
-    font-size: 1.5rem;
-    font-family: "Roboto Mono", monospace;
-    text-transform: uppercase;
+	color: var(--lighter-green);
+    font-size: 22px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: bold;
 } 
 
