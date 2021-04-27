@@ -1,16 +1,18 @@
 import Logo 							from '../navbar/Logo';
 import EarthPic							from '../Pictures/earth.jpg'
 import Login 							from '../modals/Login';
-import Delete 							from '../modals/Delete';
+import DeleteMapModal					from '../modals/DeleteMap'
 import CreateAccount 					from '../modals/CreateAccount';
 import UpdateAccount					from '../modals/UpdateAccount';
+import NameMap							from '../modals/NameMap';
 import NavbarOptions 					from '../navbar/NavbarOptions';
+import MapContents						from '../map/MapContents'
 import * as mutations 					from '../../cache/mutations';
-import { GET_DB_TODOS } 				from '../../cache/queries';
+import { GET_DB_MAPS } 				from '../../cache/queries';
 import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
-import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
+import { WLayout, WLHeader, WLMain, WLSide, WButton} from 'wt-frontend';
 import { UpdateListField_Transaction, 
 	SortItems_Transaction,
 	UpdateListItems_Transaction, 
@@ -35,73 +37,58 @@ const Homescreen = (props) => {
 
 	const auth = props.user === null ? false : true;
 	const userName = props.user !== null ? props.user.firstName + " " + props.user.lastName : "";
-	let todolists 	= [];
-	let SidebarData = [];
+	let maps 	= [];
+	let MapData = [];
 	const [sortRule, setSortRule] = useState('unsorted'); // 1 is ascending, -1 desc
-	const [activeList, setActiveList] 		= useState({});
-	const [showDelete, toggleShowDelete] 	= useState(false);
+	const [activeMap, setActiveMap] 		= useState({});
+	const [showDeleteMap, toggleShowDeleteMap] 	= useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
 	const [showCreate, toggleShowCreate] 	= useState(false);
 	const [showUpdate, toggleShowUpdate] 	= useState(false);
+	const [showNameMap, toggleShowNameMap]	= useState(false);
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 
-	const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
+	const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
+	const isMapActive = activeMap._id === undefined ? false : true;
 
 	if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
-		// Assign todolists 
-		for(let todo of data.getAllTodos) {
-			todolists.push(todo)
-		}
-		// if a list is selected, shift it to front of todolists
-		if(activeList._id) {
-			let selectedListIndex = todolists.findIndex(entry => entry._id === activeList._id);
-			let removed = todolists.splice(selectedListIndex, 1);
-			todolists.unshift(removed[0]);
-		}
-		// create data for sidebar links
-		for(let todo of todolists) {
-			if(todo) {
-				SidebarData.push({_id: todo._id, name: todo.name});
-			}	
-		}
+		maps = data.getAllMaps;
+		MapData = maps;
 	}
-
-
 	
 	// NOTE: might not need to be async
-	const reloadList = async () => {
-		if (activeList._id) {
-			let tempID = activeList._id;
-			let list = todolists.find(list => list._id === tempID);
-			setActiveList(list);
+	const reloadMaps = async () => {
+		if (activeMap._id) {
+			let tempID = activeMap._id;
+			let map = maps.find(map => map._id === tempID);
+			setActiveMap(map);
 		}
 	}
 
-	const loadTodoList = (list) => {
+	const loadMap = (map) => {
 		props.tps.clearAllTransactions();
 		setCanUndo(props.tps.hasTransactionToUndo());
 		setCanRedo(props.tps.hasTransactionToRedo());
-		setActiveList(list);
+		setActiveMap(map);
 
 	}
 
 	const mutationOptions = {
-		refetchQueries: [{ query: GET_DB_TODOS }], 
+		refetchQueries: [{ query: GET_DB_MAPS }], 
 		awaitRefetchQueries: true,
-		onCompleted: () => reloadList()
+		onCompleted: () => reloadMaps()
 	}
 
 	const [ReorderTodoItems] 		= useMutation(mutations.REORDER_ITEMS, mutationOptions);
 	const [sortTodoItems] 		= useMutation(mutations.SORT_ITEMS, mutationOptions);
 	const [UpdateTodoItemField] 	= useMutation(mutations.UPDATE_ITEM_FIELD, mutationOptions);
-	const [UpdateTodolistField] 	= useMutation(mutations.UPDATE_TODOLIST_FIELD, mutationOptions);
+	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
 	const [DeleteTodoItem] 			= useMutation(mutations.DELETE_ITEM, mutationOptions);
 	const [AddTodoItem] 			= useMutation(mutations.ADD_ITEM, mutationOptions);
-	const [AddTodolist] 			= useMutation(mutations.ADD_TODOLIST);
-	const [DeleteTodolist] 			= useMutation(mutations.DELETE_TODOLIST);
+	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
 
 
 	
@@ -122,7 +109,7 @@ const Homescreen = (props) => {
 	}
 
 	const addItem = async () => {
-		let list = activeList;
+		let list = activeMap;
 		const items = list.items;
 		const newItem = {
 			_id: '',
@@ -133,14 +120,14 @@ const Homescreen = (props) => {
 		};
 		let opcode = 1;
 		let itemID = newItem._id;
-		let listID = activeList._id;
+		let listID = activeMap._id;
 		let transaction = new UpdateListItems_Transaction(listID, itemID, newItem, opcode, AddTodoItem, DeleteTodoItem);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	};
 
 	const deleteItem = async (item, index) => {
-		let listID = activeList._id;
+		let listID = activeMap._id;
 		let itemID = item._id;
 		let opcode = 0;
 		let itemToDelete = {
@@ -159,7 +146,7 @@ const Homescreen = (props) => {
 	const editItem = async (itemID, field, value, prev) => {
 		let flag = 0;
 		if (field === 'completed') flag = 1;
-		let listID = activeList._id;
+		let listID = activeMap._id;
 		let transaction = new EditItem_Transaction(listID, itemID, field, prev, value, flag, UpdateTodoItemField);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
@@ -167,82 +154,78 @@ const Homescreen = (props) => {
 	};
 
 	const reorderItem = async (itemID, dir) => {
-		let listID = activeList._id;
+		let listID = activeMap._id;
 		let transaction = new ReorderItems_Transaction(listID, itemID, dir, ReorderTodoItems);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 
 	};
 
-	const createNewList = async () => {
-		let list = {
-			_id: '',
-			name: 'Untitled',
-			owner: props.user._id,
-			items: [],
-			sortRule: 'task',
-			sortDirection: 1
-		}
-		const { data } = await AddTodolist({ variables: { todolist: list }, refetchQueries: [{ query: GET_DB_TODOS }] });
-		if(data) {
-			loadTodoList(data.addTodolist);
-		} 
-		
-	};
-	const deleteList = async (_id) => {
-		DeleteTodolist({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_TODOS }] });
-		loadTodoList({});
+	const deleteMap = async (_id) => {
+		DeleteMap({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_MAPS }] });
+		loadMap({});
 	};
 
-	const updateListField = async (_id, field, value, prev) => {
-		let transaction = new UpdateListField_Transaction(_id, field, prev, value, UpdateTodolistField);
-		props.tps.addTransaction(transaction);
-		tpsRedo();
-
+	const updateMapField = async (_id, field, value) => {
+		const { data } = await UpdateMapField({ variables: { _id: _id, field: field, value: value}});
+		return data;
 	};
 
 	const handleSetActive = (_id) => {
-		const selectedList = todolists.find(todo => todo._id === _id);
-		loadTodoList(selectedList);
+		const selectedList = maps.find(todo => todo._id === _id);
+		loadMap(selectedList);
 	};
 
 	const setShowLogin = () => {
-		toggleShowDelete(false);
+		toggleShowDeleteMap(false);
 		toggleShowCreate(false);
 		toggleShowUpdate(false);
+		toggleShowNameMap(false);
 		toggleShowLogin(!showLogin);
 	};
 
 	const setShowCreate = () => {
-		toggleShowDelete(false);
+		toggleShowDeleteMap(false);
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
+		toggleShowNameMap(false);
 		toggleShowCreate(!showCreate);
 	};
 
-	const setShowDelete = () => {
+	const setShowDeleteMap = () => {
 		toggleShowCreate(false);
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
-		toggleShowDelete(!showDelete)
+		toggleShowNameMap(false);
+		toggleShowDeleteMap(!showDeleteMap)
 	};
 
 	const setShowUpdate = () => {
 		toggleShowCreate(false);
 		toggleShowLogin(false);
-		toggleShowDelete(false);
+		toggleShowDeleteMap(false);
+		toggleShowNameMap(false);
 		toggleShowUpdate(!showUpdate)
+	}
+
+	const setShowNameMap = () => {
+		toggleShowCreate(false);
+		toggleShowLogin(false);
+		toggleShowDeleteMap(false);
+		toggleShowUpdate(false)
+		toggleShowNameMap(!showNameMap);
 	}
 	
 	const sort = (criteria) => {
 		let prevSortRule = sortRule;
 		setSortRule(criteria);
-		let transaction = new SortItems_Transaction(activeList._id, criteria, prevSortRule, sortTodoItems);
+		let transaction = new SortItems_Transaction(activeMap._id, criteria, prevSortRule, sortTodoItems);
 		console.log(transaction)
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	}
 
+	console.log(activeMap._id)
 	return (
 		<WLayout wLayout="header">
 			<WLHeader>
@@ -256,7 +239,7 @@ const Homescreen = (props) => {
 						<NavbarOptions
 							fetchUser={props.fetchUser} 	auth={auth} 
 							setShowCreate={setShowCreate} 	setShowLogin={setShowLogin}
-							reloadTodos={refetch} 			setActiveList={loadTodoList}
+							reloadTodos={refetch} 			setactiveMap={loadMap}
 							getUser = {userName}			setShowUpdate = {setShowUpdate}
 						/>
 					</ul>
@@ -266,17 +249,22 @@ const Homescreen = (props) => {
 			<WLMain style = {{backgroundColor: "#32599c"}}>
 			{
 				auth ? 
-				<div className = "welcome-text"/>
+				<MapContents
+					mapIDs = {MapData}	activeMap = {activeMap._id} 
+					handleSetActive = {handleSetActive} key = {activeMap._id}
+					updateMapField = {updateMapField} setShowDeleteMap = {setShowDeleteMap}
+					setShowNameMap = {setShowNameMap}
+				></MapContents>
 				:
 				<div className = "welcome-text">
 					<p>Welcome to The World Data Mapper.</p>
-					<img src = {EarthPic}  alt = "Earth Picture" style = {{width: "400px", height: "400px"}}></img>
+					<img src = {EarthPic}  alt = "Earth" style = {{width: "400px", height: "400px"}}></img>
 				</div>
 			}
 			</WLMain>
 
 			{
-				showDelete && (<Delete deleteList={deleteList} activeid={activeList._id} setShowDelete={setShowDelete} />)
+				showDeleteMap && (<DeleteMapModal deleteMap={deleteMap} activeid={activeMap._id} setShowDeleteMap={setShowDeleteMap} />)
 			}
 
 			{
@@ -289,6 +277,10 @@ const Homescreen = (props) => {
 
 			{
 				showUpdate && (<UpdateAccount fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} _id = {props.user._id}/>)
+			}
+
+			{
+				showNameMap && (<NameMap setShowNameMap={setShowNameMap} user = {props.user} loadMap = {loadMap}></NameMap>)
 			}
 		</WLayout>
 	);
