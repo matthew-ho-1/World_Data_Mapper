@@ -154,7 +154,7 @@ html, body {
     border-bottom: 1px solid;
     color: $text-color;
     transition: 0.05s ease-in-out;
-    height: 46px;
+    height: 60px;
 }
 
 .table-entry:hover {
@@ -172,7 +172,8 @@ html, body {
 }
 
 .table-header {
-    border-bottom: 2px $text-color dotted;
+    border-bottom: 2px $text-color solid;
+    background-color: $navbar-background-color;
 }
 
 .table-header-section {
@@ -184,7 +185,19 @@ html, body {
 .table-header-section:hover {
     transition: 0.1s ease-in-out;
     cursor: pointer;
-    background-color: var(--deep-blue-lighter);
+    background-color: #2b5e2c;
+}
+
+.region-header{
+    font-size: 30px;
+}
+
+.region-text{
+    font-size: 30px;
+}
+
+.map-name{
+    color: #1ddbdb;
 }
 
 .table-input {

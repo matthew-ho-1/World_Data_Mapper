@@ -17,7 +17,7 @@ export const GET_DB_MAPS = gql`
 			_id
 			name
 			owner
-			subregions {
+			regions {
 				_id
 				name
 				capital

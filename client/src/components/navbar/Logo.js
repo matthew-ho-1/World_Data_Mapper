@@ -1,10 +1,11 @@
 import React from 'react';
+import {WButton} from 'wt-frontend';
 
 const Logo = (props) => {
     return (
-        <div className='logo'>
+        <WButton className='logo' wType = "transparent" onClick = {props.setInactive}>
             The World Data Mapper
-        </div>
+        </WButton>
     );
 };
 

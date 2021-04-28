@@ -7,8 +7,9 @@ import UpdateAccount					from '../modals/UpdateAccount';
 import NameMap							from '../modals/NameMap';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import MapContents						from '../map/MapContents'
+import RegionContents					from '../region/RegionContents';
 import * as mutations 					from '../../cache/mutations';
-import { GET_DB_MAPS } 				from '../../cache/queries';
+import { GET_DB_MAPS } 				    from '../../cache/queries';
 import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
@@ -87,7 +88,7 @@ const Homescreen = (props) => {
 	const [UpdateTodoItemField] 	= useMutation(mutations.UPDATE_ITEM_FIELD, mutationOptions);
 	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
 	const [DeleteTodoItem] 			= useMutation(mutations.DELETE_ITEM, mutationOptions);
-	const [AddTodoItem] 			= useMutation(mutations.ADD_ITEM, mutationOptions);
+	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
 	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
 
 
@@ -108,22 +109,21 @@ const Homescreen = (props) => {
 		}
 	}
 
-	const addItem = async () => {
-		let list = activeMap;
-		const items = list.items;
-		const newItem = {
+	const addRegion = async () => {
+		let map = activeMap;
+		const region = map.regions
+		const newRegion = {
 			_id: '',
-			description: 'No Description',
-			due_date: 'No Date',
-			assigned_to: 'No One',
-			completed: false
+			name: 'No Name',
+			capital: 'No Capital',
+			leader: 'No One',
+			landmarks: []
 		};
 		let opcode = 1;
-		let itemID = newItem._id;
-		let listID = activeMap._id;
-		let transaction = new UpdateListItems_Transaction(listID, itemID, newItem, opcode, AddTodoItem, DeleteTodoItem);
-		props.tps.addTransaction(transaction);
-		tpsRedo();
+		let regionID = newRegion._id;
+		let mapID = activeMap._id;
+		const { data } = await AddRegion({variables: {region:  newRegion, _id: mapID, index: -1}})
+		console.log(data);
 	};
 
 	const deleteItem = async (item, index) => {
@@ -137,10 +137,6 @@ const Homescreen = (props) => {
 			assigned_to: item.assigned_to,
 			completed: item.completed
 		}
-		let transaction = new UpdateListItems_Transaction(listID, itemID, itemToDelete, opcode, AddTodoItem, DeleteTodoItem, index);
-		props.tps.addTransaction(transaction);
-		tpsRedo();
-
 	};
 
 	const editItem = async (itemID, field, value, prev) => {
@@ -175,6 +171,10 @@ const Homescreen = (props) => {
 		const selectedList = maps.find(todo => todo._id === _id);
 		loadMap(selectedList);
 	};
+
+	const setInactive = () =>{
+		setActiveMap("")
+	}
 
 	const setShowLogin = () => {
 		toggleShowDeleteMap(false);
@@ -225,14 +225,13 @@ const Homescreen = (props) => {
 		tpsRedo();
 	}
 
-	console.log(activeMap._id)
 	return (
 		<WLayout wLayout="header">
 			<WLHeader>
 				<WNavbar color="colored">
 					<ul>
 						<WNavItem>
-							<Logo className='logo' />
+							<Logo className='logo' setInactive = {setInactive}/>
 						</WNavItem>
 					</ul>
 					<ul>
@@ -249,6 +248,11 @@ const Homescreen = (props) => {
 			<WLMain style = {{backgroundColor: "#32599c"}}>
 			{
 				auth ? 
+				isMapActive ?
+				<RegionContents 
+				 	activeMap = {activeMap} addRegion = {addRegion}> 
+				</RegionContents>
+				:
 				<MapContents
 					mapIDs = {MapData}	activeMap = {activeMap._id} 
 					handleSetActive = {handleSetActive} key = {activeMap._id}

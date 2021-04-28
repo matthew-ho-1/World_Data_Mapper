@@ -8,9 +8,8 @@ html {
 
 /* ----------------------------- Top-Level Setup ---------------------------- */
 .container-primary {
-    width: 100%;
+    width: 103.3%;
     height: 100%;
-    padding: 0 24px;
 }
 
 .container-secondary {
@@ -72,6 +71,20 @@ html {
     cursor: pointer;
 }
 
+.region-header{
+    height: 75px;
+    padding-top: 33px;
+}
+
+.region-text{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.map-name{
+    display: inline-block;
+}
+
 .table {
     display: flex;
     //float: left;
@@ -85,10 +98,7 @@ html {
 }
 
 .table-header {
-    width: calc(100% - 56px);
     box-sizing: border-box;
-    margin-left: 24px;
-    margin-right: 32px;
 }
 
 .table-header-section {
@@ -117,15 +127,8 @@ html {
     align-items: center;
 }
 
-.table-entry-buttons {
-    padding: 0;
-    margin-left: 36px;
-    // margin-right: 18px;
-}
-
-.table-entry-buttons-disabled {
-    padding: 0;
-    margin-left: 36px;
+.table-entry{
+    width: 97.6%;
 }
 
 .button-group {

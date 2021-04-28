@@ -1,5 +1,5 @@
 const { model, Schema, ObjectId } = require('mongoose');
-const Subregion = require('./subregion-model').schema;
+const region = require('./region-model').schema;
 
 const mapSchema = new Schema(
 	{
@@ -16,7 +16,7 @@ const mapSchema = new Schema(
 			type: String,
 			required: true
 		},
-		subregions: [Subregion],
+		regions: [region],
 		sortRule: {
 			type: String, 
 			required: true

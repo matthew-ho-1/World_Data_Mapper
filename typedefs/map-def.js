@@ -6,11 +6,11 @@ const typeDefs = gql `
 		_id: String!
 		name: String!
 		owner: String!
-		subregions: [Subregion]
+		regions: [Region]
 		sortRule: String!
 		sortDirection: Int!
 	}
-	type Subregion {
+	type Region {
 		_id: String!
 		name: String!
 		capital: String!
@@ -24,6 +24,7 @@ const typeDefs = gql `
 		addMap(map: MapInput!): Map
 		updateMapField(_id: String!, field: String!, value: String!): String
 		deleteMap(_id: String!): Boolean
+		addRegion(region: RegionInput!, _id: String!, index: Int!): String
 	}
 
 	input FieldInput {
@@ -36,11 +37,11 @@ const typeDefs = gql `
 		_id: String!
 		name: String!
 		owner: String!
-		subregions: [SubregionInput]
+		regions: [RegionInput]
 		sortRule: String!
 		sortDirection: Int!
 	}
-	input SubregionInput {
+	input RegionInput {
 		_id: String!
 		name: String!
 		capital: String!

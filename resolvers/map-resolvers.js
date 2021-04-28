@@ -30,12 +30,12 @@ module.exports = {
 		addMap: async (_, args) => {
 			const { map } = args;
 			const objectId = new ObjectId();
-			const { id, name, owner, subregions , sortRule, sortDirection} = map;
+			const { id, name, owner, regions , sortRule, sortDirection} = map;
 			const newMap = new Map({
 				_id: objectId,
 				name: name,
 				owner: owner,
-				subregions: subregions,
+				regions: regions,
 				sortRule: sortRule,
 				sortDirection: sortDirection,
 			});
@@ -68,6 +68,25 @@ module.exports = {
 			const deleted = await Map.deleteOne({_id: objectId});
 			if(deleted) return true;
 			else return false;
-		}
+		},
+
+			/** 
+		 	@param 	 {object} args - a map id and an region object
+			@returns {string} the objectID of the region or an error message
+		**/
+		addRegion: async(_, args) => {
+			const { _id, region , index } = args;
+			const listId = new ObjectId(_id);
+			const objectId = new ObjectId();
+			const found = await Map.findOne({_id: listId});
+			if(!found) return ('region not found');
+			if(region._id === '') region._id = objectId;
+			let listRegions = found.regions;
+			if(index < 0) listRegions.push(region);
+			else listRegions.splice(index, 0, region);
+			const updated = await Map.updateOne({_id: listId}, {regions: listRegions});
+			if(updated) return (region._id)
+			else return ('Could not add region');
+		},
 	}
 }

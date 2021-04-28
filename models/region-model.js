@@ -1,6 +1,6 @@
 const { model, Schema, ObjectId } = require('mongoose');
 
-const subregionSchema = new Schema(
+const regionSchema = new Schema(
 	{
 		_id: {
 			type: ObjectId,
@@ -22,5 +22,5 @@ const subregionSchema = new Schema(
 	}
 );
 
-const Subregion = model('subregion', subregionSchema);
-module.exports = Subregion;
+const region = model('region', regionSchema);
+module.exports = region;

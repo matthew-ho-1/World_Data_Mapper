@@ -20,7 +20,7 @@ const NameMap = (props) => {
 			_id: '',
 			name: input,
 			owner: props.user._id,
-			subregions: [],
+			regions: [],
 			sortRule: 'name',
 			sortDirection: 1
 		}
