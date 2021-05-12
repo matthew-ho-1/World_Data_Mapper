@@ -52,7 +52,7 @@ html, body {
     font-family: 'Roboto';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: $background-color;
+    background-color: #32599c;
 }
 
 .complete-task {
@@ -95,6 +95,10 @@ html, body {
     font-size: 1.125rem !important;
 }
 
+.region-info{
+    font-size: 21px;
+}
+
 .welcome-text{
     text-align: center; 
     font-weight: bold;
@@ -107,6 +111,11 @@ html, body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: bold;
 } 
+
+.nav-to-world{
+    color: var(--lighter-green);
+    font-size: 15px;
+}
 
 .modal-error {
     color: $primary-color;
@@ -198,6 +207,10 @@ html, body {
 
 .map-name{
     color: #1ddbdb;
+}
+
+.region-landmark{
+    color: white;
 }
 
 .table-input {

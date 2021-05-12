@@ -23,6 +23,7 @@ export const GET_DB_MAPS = gql`
 				capital
 				leader
 				landmarks
+				subregions
 			}
 			sortRule
 			sortDirection

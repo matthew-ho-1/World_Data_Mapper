@@ -27,6 +27,7 @@ const NameMap = (props) => {
 		const { data } = await AddMap({ variables: {map: map}, refetchQueries: [{ query: GET_DB_MAPS }] });
 		if(data){
 			props.loadMap(data.addMap);
+			props.setAncestorRegion(data.addMap);
 			props.setShowNameMap(false);
 		}
 	};

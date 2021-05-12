@@ -1,28 +1,13 @@
 import React, { useState } from 'react';
 import { WButton, WInput, WRow, WCol } from 'wt-frontend';
 
-const TableEntry = (props) => {
-    const { data } = props;
-    const name = data.name;
-    const capital = data.capital;
-    const leader = data.leader;
-    const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + "...";
-
-    const handleShowRegionView = () => {
-        props.setShowRegionView(data)
-    }
-
-    const handleNavigateToSubregion = () =>{
-        props.loadNewSubregion(data)
-        
-    }
-
+const LandmarkEntry = (props) => {
     return (
         <WRow className='table-entry'>
             <WCol size="1">
                 
             </WCol>
-            <WCol size="2" onClick = {handleNavigateToSubregion}>
+            <WCol size="2">
                 {
                     <div className="table-text">{name}</div>
                 }
@@ -51,4 +36,4 @@ const TableEntry = (props) => {
     );
 };
 
-export default TableEntry;
+export default LandmarkEntry;

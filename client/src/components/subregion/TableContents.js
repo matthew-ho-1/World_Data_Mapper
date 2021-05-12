@@ -3,7 +3,7 @@ import TableEntry   from './TableEntry';
 import {WSidebar} from 'wt-frontend';
 
 const TableContents = (props) => {
-    let entries = props.activeMap ? props.activeMap.regions : null;
+    let entries = props.activeSubregion ? props.activeSubregion.subregions: null;
     let entryCount = 0;
     if(entries) {
         entries = entries.filter(entry => entry !== null);
@@ -22,7 +22,7 @@ const TableContents = (props) => {
         </div>
         : <div className='container-primary' >
             {
-                props.activeMap._id ? <h2 className="nothing-msg"> Nothing to do!</h2> : <></> 
+                props.activeSubregion._id ? <h2 className="nothing-msg"> Nothing to do!</h2> : <></> 
             }               
         </div>
     );

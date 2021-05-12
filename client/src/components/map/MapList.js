@@ -9,9 +9,10 @@ const MapList = (props) => {
                 props.mapIDs &&
                 props.mapIDs.map(entry => (
                     <MapEntry
-                        handleSetActive={props.handleSetActive} activeMap={props.activeMap}
+                        handleSetActive={props.handleSetActive} activeMap={entry}
                         id={tempID++} key={entry._id+props.activeMap} name={entry.name} _id={entry._id}
                         updateMapField = {props.updateMapField} setShowDeleteMap = {props.setShowDeleteMap}
+                        setIsMapActive = {props.setIsMapActive} setAncestorRegion = {props.setAncestorRegion}
                     />
                 ))
             }

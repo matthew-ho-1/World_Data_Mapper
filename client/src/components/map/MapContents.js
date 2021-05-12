@@ -18,6 +18,7 @@ const MapContents = (props) => {
                             mapIDs = {props.mapIDs}	activeMap = {props.activeMap}
                             handleSetActive = {props.handleSetActive} key = {props.key}
                             updateMapField = {props.updateMapField} setShowDeleteMap = {props.setShowDeleteMap}
+                            setIsMapActive = {props.setIsMapActive}  setAncestorRegion = {props.setAncestorRegion}
                         />
                     </WSidebar>
                 </WLSide>

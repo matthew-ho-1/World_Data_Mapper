@@ -5,6 +5,7 @@ import { WModal, WMHeader, WMMain, WButton } from 'wt-frontend';
 const DeleteMap = (props) => {
 
     const handleDelete = async () => {
+        console.log(props.activeid)
         props.deleteMap(props.activeid);
         props.setShowDeleteMap(false);
     }

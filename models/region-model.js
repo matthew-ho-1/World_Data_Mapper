@@ -6,6 +6,10 @@ const regionSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
+		_parentid:{
+			type: ObjectId,
+			required: true
+		},
 		name: {
 			type: String,
 			required: true
@@ -18,7 +22,8 @@ const regionSchema = new Schema(
 			type: String,
 			required: true
 		},
-		landmarks: [String]
+		landmarks: [String],
+		subregions: [String]
 	}
 );
 

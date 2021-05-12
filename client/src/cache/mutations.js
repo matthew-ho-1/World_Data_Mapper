@@ -47,6 +47,13 @@ export const ADD_REGION= gql`
 	}
 `;
 
+export const ADD_SUBREGION= gql`
+	mutation AddSubregion($subregion: RegionInput!, $_id: String!, $index: Int!, $previd: String!) {
+		addSubregion(subregion: $subregion, _id: $_id, index: $index, previd: $previd)
+	}
+`;
+
+
 export const DELETE_ITEM = gql`
 	mutation DeleteItem($itemId: String!, $_id: String!) {
 		deleteItem(itemId: $itemId, _id: $_id) {
@@ -107,6 +114,7 @@ export const ADD_MAP = gql`
 				capital
 				leader
 				landmarks
+				subregions
 			}
 			sortRule
 			sortDirection

@@ -2,9 +2,9 @@ import React from 'react';
 
 import { WButton, WRow, WCol } from 'wt-frontend';
 
-const regionHeader = (props) => {
+const SubregionHeader = (props) => {
     const clickDisabled = () => { };
-    const className = "region " + props.activeMapName;
+    const className = "region " + props.activeRegionName;
     const buttonStyle = props.disabled ? ' table-header-button-disabled ' : 'table-header-button ';
     const undoOptions = {
         className: props.disabled || !props.canUndo ? ' table-header-button-disabled ' : 'table-header-button',
@@ -24,7 +24,7 @@ const regionHeader = (props) => {
 
     return (
         <div className = "region-header">
-            <WButton className="region-buttons" wType="texted" onClick = {props.addRegion} clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "28px"}}>
+            <WButton className="region-buttons" wType="texted" onClick = {props.addSubregion} clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "28px"}}>
                 <i className="material-icons" style = {{color: "#1ddbdb"}}>add_box</i>
             </WButton>
             <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded" style = {{visibility: "hidden"}}>
@@ -36,11 +36,11 @@ const regionHeader = (props) => {
             <div className = "region-text">Region Name: </div>
             <div className =  "map-name" style = {{display: "inline-block"}}>
             {
-                props.activeMapName
+                props.activeRegionName
             } 
             </div>
         </div>
     );
 };
 
-export default regionHeader;
+export default SubregionHeader;

@@ -19,8 +19,7 @@ module.exports = {
 			if(maps) {
 				return (maps);
 			} 
-
-		},
+		}
 	},
 	Mutation: {
 		/** 
@@ -70,7 +69,7 @@ module.exports = {
 			else return false;
 		},
 
-			/** 
+		/** 
 		 	@param 	 {object} args - a map id and an region object
 			@returns {string} the objectID of the region or an error message
 		**/
@@ -87,6 +86,19 @@ module.exports = {
 			const updated = await Map.updateOne({_id: listId}, {regions: listRegions});
 			if(updated) return (region._id)
 			else return ('Could not add region');
+		},
+
+		/** 
+		 	@param 	 {object} args - a map id and an subregion id
+			@returns {string} the objectID of the subregion or an error message
+		**/
+		addSubregion: async(_, args) => {
+			const { _id, subregion, previd} = args;
+			const field = "subregions"
+			const listId = new ObjectId(_id);
+			const objectId = new ObjectId();
+			const found = await Map.findOne({_id: listId});
+			
 		},
 	}
 }
