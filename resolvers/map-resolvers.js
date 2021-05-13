@@ -87,7 +87,7 @@ module.exports = {
 			}
 			else{
 				for(const regionelem of listRegions){
-					if(location[location.length-1] == regionelem._id){
+					if(location[location.length-1] === regionelem._id){
 						regionelem.subregions.push(objectId.toString());
 					}
 				}
@@ -140,18 +140,33 @@ module.exports = {
 			let newDirection = found.sortDirection === 1 ? -1 : 1;
 			console.log(newDirection, found.sortDirection);
 			let listRegions = found.regions;
-			let targetRegions = listRegions.filter(region => region.parentid == parentid);
+			let arrayOfIndex = [];
+			let targetRegions = [];
+			for(let i = 0; i < listRegions.length; i++){
+				if(listRegions[i].parentid === parentid){
+					targetRegions.push(listRegions[i]);
+					arrayOfIndex.push(i);
+				}
+			}
 			let sortedRegions;
 			switch(criteria){
 				case "name": 
+				sortedRegions = Sorting.byName(targetRegions, newDirection);
 				break;
 				case "capital": 
+				sortedRegions = Sorting.byCapital(targetRegions, newDirection);
 				break;
-				case "leader": 
+				case "leader":
+				sortedRegions = Sorting.byLeader(targetRegions, newDirection); 
 				break;
 				default:
 					return found.regions;
 			}
+			for(let i = 0; i < sortedRegions.length; i++){
+				listRegions[arrayOfIndex[i]] = sortedRegions[i];
+			} 
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions, sortRule: criteria, sortDirection: newDirection })
+			if(updated) return (sortedRegions);
 		}
 	}
 }

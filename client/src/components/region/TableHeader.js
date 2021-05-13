@@ -9,7 +9,7 @@ const TableHeader = (props) => {
                 
             </WCol>
             <WCol size="2">
-                <WButton onClick={() => props.sort('task') }className='table-header-section' wType="texted" >Name</WButton>
+                <WButton onClick={() => props.sort('name') }className='table-header-section' wType="texted" >Name</WButton>
             </WCol>
             <WCol size="2">
                 <WButton onClick={() => props.sort('capital') }className='table-header-section' wType="texted">Capital</WButton>
