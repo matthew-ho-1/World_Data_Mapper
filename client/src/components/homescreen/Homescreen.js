@@ -2,13 +2,13 @@ import Logo 							from '../navbar/Logo';
 import EarthPic							from '../Pictures/earth.jpg'
 import Login 							from '../modals/Login';
 import DeleteMapModal					from '../modals/DeleteMap'
+import DeleteRegionModal				from '../modals/DeleteRegion';
 import CreateAccount 					from '../modals/CreateAccount';
 import UpdateAccount					from '../modals/UpdateAccount';
 import NameMap							from '../modals/NameMap';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import MapContents						from '../map/MapContents'
 import RegionContents					from '../region/RegionContents';
-import SubregionContents				from '../subregion/SubregionContents';
 import RegionViewerContents				from '../region/RegionViewerContents';
 import * as mutations 					from '../../cache/mutations';
 import { GET_DB_MAPS } 				    from '../../cache/queries';
@@ -48,13 +48,16 @@ const Homescreen = (props) => {
 	const [activeMap, setActiveMap] 		= useState({});
 	const [activeSubregion, setActiveSubregion] = useState({});
 	const [activeRegions, setActiveRegions] = useState([])
+	const [activeids, setActiveids]			= useState([])
 	const [showDeleteMap, toggleShowDeleteMap] 	= useState(false);
+	const [showDeleteRegion, toggleShowDeleteRegion] = useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
 	const [showCreate, toggleShowCreate] 	= useState(false);
 	const [showUpdate, toggleShowUpdate] 	= useState(false);
 	const [showNameMap, toggleShowNameMap]	= useState(false);
 	const [showRegionView, toggleRegionView] = useState(false);
 	const [selectedMap, setSelectedMap]		= useState("");
+	const [selectedRegion, setSelectedRegion] = useState("");
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 	const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
@@ -67,7 +70,6 @@ const Homescreen = (props) => {
 		MapData = maps;
 	}
 
-	
 	// NOTE: might not need to be async
 	const reloadMaps = async () => {
 		if (activeMap._id) {
@@ -94,9 +96,8 @@ const Homescreen = (props) => {
 	const [sortTodoItems] 		= useMutation(mutations.SORT_ITEMS, mutationOptions);
 	const [UpdateTodoItemField] 	= useMutation(mutations.UPDATE_ITEM_FIELD, mutationOptions);
 	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
-	const [DeleteTodoItem] 			= useMutation(mutations.DELETE_ITEM, mutationOptions);
+	const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION, mutationOptions);
 	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
-	const [AddSubregion]		= useMutation(mutations.ADD_SUBREGION)
 	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
 
 	
@@ -116,57 +117,46 @@ const Homescreen = (props) => {
 		}
 	}
 
-	const loadNewSubregion = async(subregion) =>{
+	const loadNewSubregion = (subregion) =>{
 		setActiveSubregion(subregion);
+		activeids.push(subregion._id);
 		activeRegions.push(subregion);
-		console.log(activeRegions)
 	}
 
 	const setAncestorRegion = (regionData) => {
+		activeids.push(regionData._id);
 		activeRegions.push(regionData)
 	}
 
 	const addRegion = async () => {
 		let map = activeMap;
 		const region = map.regions
-		const newRegion = {
+		const newRegion = activeRegions.length === 1 ? {
 			_id: '',
+			parentid: map._id,
 			name: 'No Name',
 			capital: 'No Capital',
 			leader: 'No One',
 			landmarks: [],
 			subregions: [],
-		};
+		} :
+		{
+			_id: '',
+			parentid: activeids[activeids.length - 1],
+			name: 'No Name',
+			capital: 'No Capital',
+			leader: 'No One',
+			landmarks: [],
+			subregions: [],
+		}
 		let opcode = 1;
 		let regionID = newRegion._id;
 		let mapID = activeMap._id;
-		const { data } = await AddRegion({variables: {region:  newRegion, _id: mapID, index: -1}})
+		const { data } = await AddRegion({variables: {region:  newRegion, location: activeids, _id: mapID, index: -1}})
 	};
 
-	const addSubregion = async () =>{
-		let subregion = activeSubregion;
-		const newRegion = {
-			_id: '',
-			name: 'No Name',
-			capital: 'No Capital',
-			leader: 'No One',
-			landmarks: [],
-			subregions: [],
-		};
-		let opcode = 1;
-	}
-
-	const deleteItem = async (item, index) => {
-		let listID = activeMap._id;
-		let itemID = item._id;
-		let opcode = 0;
-		let itemToDelete = {
-			_id: item._id,
-			description: item.description,
-			due_date: item.due_date,
-			assigned_to: item.assigned_to,
-			completed: item.completed
-		}
+	const deleteRegion = async (_id) => {
+	const { data } = await DeleteRegion({variables: {regionid: _id, location: activeids, _id: activeMap._id}})
 	};
 
 	const editItem = async (itemID, field, value, prev) => {
@@ -192,6 +182,7 @@ const Homescreen = (props) => {
 		loadMap({});
 	};
 
+
 	const updateMapField = async (_id, field, value) => {
 		const { data } = await UpdateMapField({ variables: { _id: _id, field: field, value: value}});
 		return data;
@@ -206,8 +197,13 @@ const Homescreen = (props) => {
 		setSelectedMap(_id)
 	}
 
+	const setRegionToDelete = (_id) =>{
+		setSelectedRegion(_id);
+	}
+
 	const setInactive = () =>{
 		setActiveMap("")
+		setActiveSubregion("");
 		toggleRegionView(false)
 		setActiveRegions([])
 	}
@@ -235,6 +231,16 @@ const Homescreen = (props) => {
 		toggleShowUpdate(false);
 		toggleShowNameMap(false);
 		toggleShowDeleteMap(!showDeleteMap)
+	};
+
+	const setShowDeleteRegion = (id) => {
+		setRegionToDelete(id)
+		toggleShowCreate(false);
+		toggleShowLogin(false);
+		toggleShowUpdate(false);
+		toggleShowNameMap(false);
+		toggleShowDeleteMap(false);
+		toggleShowDeleteRegion(!showDeleteRegion);
 	};
 
 	const setShowUpdate = () => {
@@ -271,7 +277,6 @@ const Homescreen = (props) => {
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	}
-	console.log(region)
 	return (
 		<WLayout wLayout="header">
 			<WLHeader>
@@ -299,15 +304,13 @@ const Homescreen = (props) => {
 				auth ? 
 				isMapActive ?
 				showRegionView?
-				<RegionViewerContents getRegion = {region} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}></RegionViewerContents>
-				:
-				activeRegions.length > 1 ?
-				<SubregionContents 
-				activeSubregion = {activeSubregion} addSubregion = {addSubregion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}> 
-		  	 	</SubregionContents>
+				<RegionViewerContents getRegion = {region} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
+				activeRegions = {activeRegions}></RegionViewerContents>
 				:
 				<RegionContents 
-				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}> 
+				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
+					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion} setShowRegionView = {setShowRegionView} 
+					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions}> 
 				</RegionContents>
 				:
 				<MapContents
@@ -326,6 +329,11 @@ const Homescreen = (props) => {
 
 			{
 				showDeleteMap && (<DeleteMapModal deleteMap={deleteMap} activeid={selectedMap} setShowDeleteMap={setShowDeleteMap}/>)
+			}
+
+			{
+				showDeleteRegion && (<DeleteRegionModal setShowDeleteRegion={setShowDeleteRegion} setShowDeletRegion = {setShowDeleteRegion} 
+					activeid = {selectedRegion} deleteRegion = {deleteRegion}></DeleteRegionModal>)
 			}
 
 			{

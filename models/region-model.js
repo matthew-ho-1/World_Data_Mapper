@@ -6,8 +6,8 @@ const regionSchema = new Schema(
 			type: ObjectId,
 			required: true
 		},
-		_parentid:{
-			type: ObjectId,
+		parentid:{
+			type: String,
 			required: true
 		},
 		name: {

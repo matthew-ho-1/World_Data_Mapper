@@ -12,6 +12,7 @@ const typeDefs = gql `
 	}
 	type Region {
 		_id: String!
+		parentid: String!
 		name: String!
 		capital: String!
 		leader: String!
@@ -26,8 +27,8 @@ const typeDefs = gql `
 		addMap(map: MapInput!): Map
 		updateMapField(_id: String!, field: String!, value: String!): String
 		deleteMap(_id: String!): Boolean
-		addRegion(region: RegionInput!, _id: String!, index: Int!): String
-		addSubregion(subregion: RegionInput!, _id: String!, index: Int!, previd: String!): Boolean
+		addRegion(region: RegionInput!, location: [String!]!, _id: String!, index: Int!): String
+		deleteRegion(regionid: String!, _id: String!): [Region]
 	}
 
 	input FieldInput {
@@ -46,6 +47,7 @@ const typeDefs = gql `
 	}
 	input RegionInput {
 		_id: String!
+		parentid: String!
 		name: String!
 		capital: String!
 		leader: String!

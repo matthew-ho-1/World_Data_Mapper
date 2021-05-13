@@ -27,16 +27,19 @@ const regionHeader = (props) => {
             <WButton className="region-buttons" wType="texted" onClick = {props.addRegion} clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "28px"}}>
                 <i className="material-icons" style = {{color: "#1ddbdb"}}>add_box</i>
             </WButton>
-            <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded" style = {{visibility: "hidden"}}>
+            <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded">
                 <i className="material-icons md-24" style = {{color: "white"}}>undo</i>
             </WButton>
-            <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded" style = {{visibility: "hidden"}}>
+            <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded">
                 <i className="material-icons md-24" style = {{color: "white"}}>redo</i>
             </WButton>
             <div className = "region-text">Region Name: </div>
             <div className =  "map-name" style = {{display: "inline-block"}}>
             {
+                props.activeSubregionName === "" ?
                 props.activeMapName
+                :
+                props.activeSubregionName
             } 
             </div>
         </div>

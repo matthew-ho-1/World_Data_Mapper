@@ -8,6 +8,8 @@ const TableEntry = (props) => {
     const leader = data.leader;
     const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + "...";
 
+    const [editingName, toggleNameEdit] = useState(false);
+
     const handleShowRegionView = () => {
         props.setShowRegionView(data)
     }
@@ -17,10 +19,19 @@ const TableEntry = (props) => {
         
     }
 
+    const handleDeleteRegion = () =>{
+        props.setShowDeleteRegion(data._id)
+    }
+
     return (
         <WRow className='table-entry'>
             <WCol size="1">
-                
+                <WButton className="table-entry-buttons" wType="texted" onClick = {handleDeleteRegion}>
+                         <i className="material-icons md-24">close</i>
+                </WButton>
+                <WButton className="table-entry-buttons" wType="texted">
+                         <i className="material-icons md-24">edit</i>
+                </WButton>
             </WCol>
             <WCol size="2" onClick = {handleNavigateToSubregion}>
                 {

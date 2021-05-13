@@ -74,31 +74,43 @@ module.exports = {
 			@returns {string} the objectID of the region or an error message
 		**/
 		addRegion: async(_, args) => {
-			const { _id, region , index } = args;
+			const { _id, location, region , index } = args;
 			const listId = new ObjectId(_id);
 			const objectId = new ObjectId();
 			const found = await Map.findOne({_id: listId});
 			if(!found) return ('region not found');
 			if(region._id === '') region._id = objectId;
-			let listRegions = found.regions;
-			if(index < 0) listRegions.push(region);
-			else listRegions.splice(index, 0, region);
+			const listRegions = found.regions;
+			if(location.length === 1){
+				if(index < 0) listRegions.push(region);
+				else listRegions.splice(index, 0, region);
+			}
+			else{
+				for(let i = 0; i < listRegions.length; i++){
+					if(location[location.length-1] == listRegions[i]._id){
+						listRegions[i].subregions.push(objectId.toString());
+					}
+				}
+				listRegions.push(region);
+			}
 			const updated = await Map.updateOne({_id: listId}, {regions: listRegions});
 			if(updated) return (region._id)
 			else return ('Could not add region');
 		},
-
 		/** 
-		 	@param 	 {object} args - a map id and an subregion id
-			@returns {string} the objectID of the subregion or an error message
+		 	@param 	 {object} args - a todolist objectID and item objectID
+			@returns {array} the updated item array on success or the initial 
+							 array on failure
 		**/
-		addSubregion: async(_, args) => {
-			const { _id, subregion, previd} = args;
-			const field = "subregions"
+		deleteRegion: async (_, args) => {
+			const  { _id, location, regionid } = args;
 			const listId = new ObjectId(_id);
-			const objectId = new ObjectId();
 			const found = await Map.findOne({_id: listId});
-			
-		},
+			let listRegions = found.regions;
+			listRegions= listRegions.filter(region => region._id.toString() !== regionid);
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
+			if(updated) return (listRegions);
+			else return (found.regions);
+		}
 	}
 }
