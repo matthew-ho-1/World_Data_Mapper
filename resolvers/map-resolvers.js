@@ -10,7 +10,7 @@ module.exports = {
 	Query: {
 		/** 
 		 	@param 	 {object} req - the request object containing a user id
-			@returns {array} an array of todolist objects on success, and an empty array on failure
+			@returns {array} an array of map objects on success, and an empty array on failure
 		**/
 		getAllMaps: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
@@ -86,9 +86,9 @@ module.exports = {
 				else listRegions.splice(index, 0, region);
 			}
 			else{
-				for(let i = 0; i < listRegions.length; i++){
-					if(location[location.length-1] == listRegions[i]._id){
-						listRegions[i].subregions.push(objectId.toString());
+				for(const regionelem of listRegions){
+					if(location[location.length-1] == regionelem._id){
+						regionelem.subregions.push(objectId.toString());
 					}
 				}
 				listRegions.push(region);
@@ -115,7 +115,7 @@ module.exports = {
 		/** 
 			@param	 {object} args - a map objectID, an region objectID, field, and
 									 update value. 
-			@returns {array} the updated item array on success, or the initial item array on failure
+			@returns {array} the updated region array on success, or the initial region array on failure
 		**/
 		updateRegion: async (_, args) => {
 			const { _id, regionid, field,  flag } = args;
@@ -132,5 +132,26 @@ module.exports = {
 			if(updated) return (listRegions);
 			else return (found.regions);
 		},
+
+		sortRegions: async (_, args) => {
+			const { _id, criteria, parentid} = args;
+			const listId = new ObjectId(_id);
+			const found = await Map.findOne({_id: listId});
+			let newDirection = found.sortDirection === 1 ? -1 : 1;
+			console.log(newDirection, found.sortDirection);
+			let listRegions = found.regions;
+			let targetRegions = listRegions.filter(region => region.parentid == parentid);
+			let sortedRegions;
+			switch(criteria){
+				case "name": 
+				break;
+				case "capital": 
+				break;
+				case "leader": 
+				break;
+				default:
+					return found.regions;
+			}
+		}
 	}
 }

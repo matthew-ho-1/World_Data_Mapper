@@ -7,12 +7,13 @@ import { useHistory }		from 'react-router-dom';
 const CreateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', firstName: '', lastName: '' });
 	const [loading, toggleLoading] = useState(false);
+	const [showErr, displayErrorMsg] = useState(false);
+	const errorMsg = "Email already exists";
 	const [Register] = useMutation(REGISTER);
-
 	
 	const updateInput = (e) => {
-		const { name, value } = e.target;
-		const updated = { ...input, [name]: value };
+		const { name, value, email } = e.target;
+		const updated = { ...input, [name]: value};
 		setInput(updated);
 	};
 
@@ -26,12 +27,14 @@ const CreateAccount = (props) => {
 		const { loading, error, data } = await Register({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
+		if(data.register.email === "already exists"){
+			displayErrorMsg(true);
+			return;
+		}
 		if (data) {
-			console.log(data)
 			toggleLoading(false);
 			props.fetchUser();
 			props.setShowCreate(false);
-
 		};
 	};
 
@@ -69,6 +72,12 @@ const CreateAccount = (props) => {
 								className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
 								barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
 							/>
+							{
+								showErr ? <div className='modal-error'>
+									{errorMsg}
+								</div>
+									: <div className='modal-error'>&nbsp;</div>
+							}
 					</WMMain>
 			}
 			<WMFooter>

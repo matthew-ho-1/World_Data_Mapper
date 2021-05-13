@@ -44,14 +44,25 @@ module.exports = {
 		**/
 		register: async (_, args, { res }) => {
 			const { email, password, firstName, lastName } = args;
-			const alreadyRegistered = await User.findOne({email: email});
+			let emailLower = email.toLowerCase();
+			const alreadyRegistered = await User.findOne({email: emailLower});
+			if(alreadyRegistered) {
+				console.log('User with that email already registered.');
+				return(new User({
+					_id: '',
+					firstName: '',
+					lastName: '',
+					email: 'already exists', 
+					password: '',
+					initials: ''}));
+			}
 			const hashed = await bcrypt.hash(password, 10);
 			const _id = new ObjectId();
 			const user = new User({
 				_id: _id,
 				firstName: firstName,
 				lastName: lastName,
-				email: email, 
+				email: emailLower, 
 				password: hashed,
 				initials: `${firstName[0]}.${lastName[0]}.`
 			})
@@ -73,8 +84,20 @@ module.exports = {
 		update: async (_, args, { res }) => {
 			const { email, password, firstName, lastName, _id } = args;
 			const objectId = new ObjectId(_id);
+			let emailLower = email.toLowerCase()
+			const alreadyRegistered = await User.findOne({email: emailLower});
+			if(alreadyRegistered) {
+				console.log('User with that email already registered.');
+				return(new User({
+					_id: '',
+					firstName: '',
+					lastName: '',
+					email: 'already exists', 
+					password: '',
+					initials: ''}));
+			}
 			const hashed = await bcrypt.hash(password, 10);
-			const updated = await User.updateOne({_id: objectId}, {$set: {firstName: firstName,lastName: lastName, email: email, password: hashed, initials: `${firstName[0]}.${lastName[0]}.`}});
+			const updated = await User.updateOne({_id: objectId}, {$set: {firstName: firstName,lastName: lastName, email: emailLower, password: hashed, initials: `${firstName[0]}.${lastName[0]}.`}});
 			return updated;
 		},
 

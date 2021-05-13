@@ -92,8 +92,7 @@ const Homescreen = (props) => {
 		onCompleted: () => reloadMaps()
 	}
 
-	const [ReorderTodoItems] 		= useMutation(mutations.REORDER_ITEMS, mutationOptions);
-	const [sortTodoItems] 		= useMutation(mutations.SORT_ITEMS, mutationOptions);
+	const [SortRegions] 		= useMutation(mutations.SORT_REGIONS, mutationOptions);
 	const [UpdateRegion] 	= useMutation(mutations.UPDATE_REGION, mutationOptions);
 	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
 	const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION, mutationOptions);
@@ -150,7 +149,6 @@ const Homescreen = (props) => {
 			subregions: [],
 		}
 		let opcode = 1;
-		let regionID = newRegion._id;
 		let mapID = activeMap._id;
 		const { data } = await AddRegion({variables: {region:  newRegion, location: activeids, _id: mapID, index: -1}})
 	};
@@ -163,13 +161,6 @@ const Homescreen = (props) => {
 		const { data } = await UpdateRegion({variables: {regionid: regionid, _id: activeMap._id, field: field, value: value}})
 	};
 
-	const reorderItem = async (itemID, dir) => {
-		let listID = activeMap._id;
-		let transaction = new ReorderItems_Transaction(listID, itemID, dir, ReorderTodoItems);
-		props.tps.addTransaction(transaction);
-		tpsRedo();
-
-	};
 
 	const deleteMap = async (_id) => {
 		DeleteMap({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_MAPS }] });
@@ -181,6 +172,14 @@ const Homescreen = (props) => {
 		const { data } = await UpdateMapField({ variables: { _id: _id, field: field, value: value}});
 		return data;
 	};
+
+	const sort = async (criteria) =>{
+		setSortRule(criteria);
+		let parentid = activeids[activeids.length - 1];
+		const { data } = await SortRegions({ variables: {_id: activeMap._id, criteria: criteria, parentid: parentid}})
+ 	}
+
+
 
 	const handleSetActive = (_id) => {
 		const selectedList = maps.find(map => map._id === _id);
@@ -263,14 +262,6 @@ const Homescreen = (props) => {
 		toggleRegionView(!showRegionView)
 	}
 
-	const sort = (criteria) => {
-		let prevSortRule = sortRule;
-		setSortRule(criteria);
-		let transaction = new SortItems_Transaction(activeMap._id, criteria, prevSortRule, sortTodoItems);
-		console.log(transaction)
-		props.tps.addTransaction(transaction);
-		tpsRedo();
-	}
 	return (
 		<WLayout wLayout="header">
 			<WLHeader>
@@ -304,7 +295,7 @@ const Homescreen = (props) => {
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
 					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion} setShowRegionView = {setShowRegionView} 
-					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion}>  
+					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion} sort = {sort}>  
 				</RegionContents>
 				:
 				<MapContents

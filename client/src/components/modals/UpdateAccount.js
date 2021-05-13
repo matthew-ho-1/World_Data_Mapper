@@ -7,6 +7,8 @@ import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 
 const UpdateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', firstName: '', lastName: '' });
 	const [loading, toggleLoading] = useState(false);
+	const [showErr, displayErrorMsg] = useState(false);
+	const errorMsg = "Email already exists";
 	const [Update] = useMutation(UPDATE);
 	const _id = props._id;
 	
@@ -26,6 +28,10 @@ const UpdateAccount = (props) => {
 		const { loading, error, data } = await Update({ variables: { ...input, _id } });
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
+		if(data.update.email === "already exists"){
+			displayErrorMsg(true);
+			return;
+		}
 		if (data) {
 			console.log(data)
 			toggleLoading(false);
@@ -69,6 +75,12 @@ const UpdateAccount = (props) => {
 								className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
 								barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
 							/>
+								{
+								showErr ? <div className='modal-error'>
+									{errorMsg}
+								</div>
+									: <div className='modal-error'>&nbsp;</div>
+							}
 					</WMMain>
 			}
 			<WMFooter>

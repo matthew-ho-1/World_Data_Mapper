@@ -9,13 +9,13 @@ const TableHeader = (props) => {
                 
             </WCol>
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted">Name</WButton>
+                <WButton onClick={() => props.sort('task') }className='table-header-section' wType="texted" >Name</WButton>
             </WCol>
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted">Capital</WButton>
+                <WButton onClick={() => props.sort('capital') }className='table-header-section' wType="texted">Capital</WButton>
             </WCol>
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted" >Leader</WButton>
+                <WButton onClick={() => props.sort('leader') }className='table-header-section' wType="texted" >Leader</WButton>
             </WCol>
             <WCol size="2">
                 <WButton className='table-header-section' wType="texted" >Flag</WButton>

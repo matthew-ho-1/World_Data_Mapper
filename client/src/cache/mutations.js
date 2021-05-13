@@ -87,14 +87,16 @@ export const REORDER_ITEMS = gql`
 	}
 `;
 
-export const SORT_ITEMS = gql`
-	mutation SortItems($_id: String!, $criteria: String!) {
-		sortItems(_id: $_id, criteria: $criteria) {
+export const SORT_REGIONS= gql`
+	mutation SortRegions($_id: String!, $criteria: String!, $parentid: String!) {
+		sortRegions(_id: $_id, criteria: $criteria, parentid: $parentid) {
 			_id
-			description
-			due_date
-			assigned_to
-			completed
+			parentid
+			name
+			capital
+			leader 
+			landmarks
+			subregions
 		}
 	}
 `;
