@@ -61,14 +61,16 @@ export const DELETE_REGION = gql`
 	} 
 `;
 
-export const UPDATE_ITEM_FIELD = gql`
-	mutation UpdateItemField($_id: String!, $itemId: String!, $field: String!, $value: String!, $flag: Int!) {
-		updateItemField(_id: $_id, itemId: $itemId, field: $field, value: $value, flag: $flag) {
+export const UPDATE_REGION= gql`
+	mutation UpdateRegion($_id: String!, $regionid: String!, $field: String!, $value: String!) {
+		updateRegion(_id: $_id, regionid: $regionid, field: $field, value: $value) {
 			_id
-			description
-			due_date
-			assigned_to
-			completed
+			parentid
+			name
+			capital
+			leader 
+			landmarks
+			subregions
 		}
 	}
 `;

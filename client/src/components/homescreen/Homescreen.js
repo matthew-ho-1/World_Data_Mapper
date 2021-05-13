@@ -94,7 +94,7 @@ const Homescreen = (props) => {
 
 	const [ReorderTodoItems] 		= useMutation(mutations.REORDER_ITEMS, mutationOptions);
 	const [sortTodoItems] 		= useMutation(mutations.SORT_ITEMS, mutationOptions);
-	const [UpdateTodoItemField] 	= useMutation(mutations.UPDATE_ITEM_FIELD, mutationOptions);
+	const [UpdateRegion] 	= useMutation(mutations.UPDATE_REGION, mutationOptions);
 	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
 	const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION, mutationOptions);
 	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
@@ -156,17 +156,11 @@ const Homescreen = (props) => {
 	};
 
 	const deleteRegion = async (_id) => {
-	const { data } = await DeleteRegion({variables: {regionid: _id, location: activeids, _id: activeMap._id}})
+		const { data } = await DeleteRegion({variables: {regionid: _id, _id: activeMap._id}})
 	};
 
-	const editItem = async (itemID, field, value, prev) => {
-		let flag = 0;
-		if (field === 'completed') flag = 1;
-		let listID = activeMap._id;
-		let transaction = new EditItem_Transaction(listID, itemID, field, prev, value, flag, UpdateTodoItemField);
-		props.tps.addTransaction(transaction);
-		tpsRedo();
-
+	const editRegion = async (regionid, field, value) => {
+		const { data } = await UpdateRegion({variables: {regionid: regionid, _id: activeMap._id, field: field, value: value}})
 	};
 
 	const reorderItem = async (itemID, dir) => {
@@ -310,7 +304,7 @@ const Homescreen = (props) => {
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
 					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion} setShowRegionView = {setShowRegionView} 
-					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions}> 
+					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion}>  
 				</RegionContents>
 				:
 				<MapContents

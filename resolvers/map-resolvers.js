@@ -98,12 +98,12 @@ module.exports = {
 			else return ('Could not add region');
 		},
 		/** 
-		 	@param 	 {object} args - a todolist objectID and item objectID
-			@returns {array} the updated item array on success or the initial 
+		 	@param 	 {object} args - a map objectID and region objectID
+			@returns {array} the updated regions array on success or the initial 
 							 array on failure
 		**/
 		deleteRegion: async (_, args) => {
-			const  { _id, location, regionid } = args;
+			const  { _id, regionid } = args;
 			const listId = new ObjectId(_id);
 			const found = await Map.findOne({_id: listId});
 			let listRegions = found.regions;
@@ -111,6 +111,26 @@ module.exports = {
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (listRegions);
 			else return (found.regions);
-		}
+		},
+		/** 
+			@param	 {object} args - a map objectID, an region objectID, field, and
+									 update value. 
+			@returns {array} the updated item array on success, or the initial item array on failure
+		**/
+		updateRegion: async (_, args) => {
+			const { _id, regionid, field,  flag } = args;
+			let { value } = args
+			const listId = new ObjectId(_id);
+			const found = await Map.findOne({_id: listId});
+			let listRegions = found.regions;
+			listRegions.map(region => {
+				if(region._id.toString() === regionid) {	
+					region[field] = value;
+				}
+			});
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
+			if(updated) return (listRegions);
+			else return (found.regions);
+		},
 	}
 }

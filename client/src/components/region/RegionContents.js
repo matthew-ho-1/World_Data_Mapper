@@ -13,7 +13,8 @@ const RegionContents = (props) => {
                 <TableHeader></TableHeader>
                 <WSidebar style = {{height: "700px", overflowX: "hidden", backgroundColor: "#204973"}}>
                     <TableContents activeMap = {props.activeMap} setShowRegionView = {props.setShowRegionView} loadNewSubregion = {props.loadNewSubregion}
-                    setShowDeleteRegion = {props.setShowDeleteRegion} activeSubregion = {props.activeSubregion} activeRegions = {props.activeRegions}></TableContents>
+                    setShowDeleteRegion = {props.setShowDeleteRegion} activeSubregion = {props.activeSubregion} activeRegions = {props.activeRegions}
+                    editRegion = {props.editRegion}></TableContents>
                 </WSidebar>
             </div>
         </>

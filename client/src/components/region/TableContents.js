@@ -22,7 +22,7 @@ const TableContents = (props) => {
                 <TableEntry
                     data={entry} key={entry._id} index={index} entryCount={entryCount}
                     setShowRegionView = {props.setShowRegionView} loadNewSubregion = {props.loadNewSubregion}
-                    setShowDeleteRegion = {props.setShowDeleteRegion} _id = {entry._id}
+                    setShowDeleteRegion = {props.setShowDeleteRegion} _id = {entry._id} editRegion = {props.editRegion}
                 />
             ))
         }
@@ -33,7 +33,7 @@ const TableContents = (props) => {
                     <TableEntry
                         data={entry} key={entry._id} index={index} entryCountSubregion ={entryCountSubregion}
                         setShowRegionView = {props.setShowRegionView} loadNewSubregion = {props.loadNewSubregion}
-                        setShowDeleteRegion = {props.setShowDeleteRegion}
+                        setShowDeleteRegion = {props.setShowDeleteRegion} editRegion = {props.editRegion}
                     />
                 ))
             }
