@@ -9,13 +9,26 @@ const RegionViewerContents = (props) => {
     let landmarks = props.getRegion.landmarks;
     const numOfRegions = "# of Sub Regions: " + props.subregions.length;
     const [editingParent, toggleParentEdit] = useState(false);
-
+    let index = -1;
+    for(let i = 0; i < props.listSubregions.length; i++){
+        if(props.getRegion._id === props.listSubregions[i]._id)
+            index = i;
+    }
+    const nextVisible = index === props.listSubregions.length - 1 ? true : false;
+    const prevVisible = index === 0 ? true : false;
     const handleParentEdit = (e) =>{
         let newParent = e.target.value;
-        let oldParent = props.activeRegions[props.activeRegions.length - 1].name;
         toggleParentEdit(false);
         props.updateRegionParent(props.getRegion._id, newParent);
-        props.setShowRegionView()
+        props.setShowRegionView();
+    }
+
+    const handlePrevSibling = () =>{
+        props.goToPrevSibling(props.listSubregions[index-1]);
+    }
+
+    const handleNextSibling = () =>{
+        props.goToNextSibling(props.listSubregions[index+1]);
     }
 
 
@@ -29,6 +42,13 @@ const RegionViewerContents = (props) => {
                     </WButton>
                     <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded">
                         <i className="material-icons md-24" style = {{color: "white"}}>redo</i>
+                    </WButton>
+                    <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "500px", visibility: prevVisible ? "hidden" : "visible"}} 
+                    onClick = {handlePrevSibling}>
+                        <i className="material-icons md-24" style = {{color: "white"}}>arrow_back</i>
+                    </WButton>
+                    <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded" style = {{visibility: nextVisible ? "hidden" : "visible"}} onClick = {handleNextSibling}>
+                        <i className="material-icons md-24" style = {{color: "white"}}>arrow_forward</i>
                     </WButton>
                 </WLHeader>
                 <WCard style = {{marginBottom: "50px", height: "400px", width: "500px"}}>

@@ -45,6 +45,7 @@ const Homescreen = (props) => {
 	let MapData = [];
 	const [sortRule, setSortRule] = useState('unsorted'); // 1 is ascending, -1 desc
 	const [subregions, setSubregions] 		= useState([]);
+	const [listSubregions, setListSubregions]	= useState([]);
 	const [region, setRegion]				= useState(null);
 	const [activeMap, setActiveMap] 		= useState({});
 	const [activeSubregion, setActiveSubregion] = useState({});
@@ -154,11 +155,6 @@ const Homescreen = (props) => {
 	};
 
 	const deleteRegion = async (_id) => {
-		let done = false;
-		while(!done){
-			console.log(_id);
-			done = true;
-		}
 		const { data } = await DeleteRegion({variables: {regionid: _id, _id: activeMap._id}})
 	};
 
@@ -187,6 +183,21 @@ const Homescreen = (props) => {
 
 	const updateRegionParent = async (currid, newparent) =>{
 		const { data } = await UpdateRegionParent({ variables: {_id: activeMap._id, regionid: currid, newparent: newparent}, refetchQueries: [{ query: GET_DB_MAPS }]})
+		let name = data.updateRegionParent;
+		if(name === "not found")
+			alert("Parent not found.")
+	}
+
+	const goToNextSibling = (nextSibling) =>{
+		setRegion(nextSibling);
+		let regions = MapData[0].regions;
+		setSubregions(regions.filter(regionelem => regionelem.parentid === nextSibling._id))
+	}
+
+	const goToPrevSibling = (prevSibling) =>{
+		setRegion(prevSibling)
+		let regions = MapData[0].regions;
+		setSubregions(regions.filter(regionelem => regionelem.parentid === prevSibling._id))
 	}
 
 	const handleSetActive = (_id) => {
@@ -263,8 +274,14 @@ const Homescreen = (props) => {
 	const setShowRegionView = (data) =>{
 		setRegion(data);
 		let regions = MapData[0].regions;
-		if(data !== undefined)
+		let mapid = activeMap._id;
+		if(data !== undefined){
 			setSubregions(regions.filter(regionelem => regionelem.parentid === data._id))
+			if(activeRegions.length === 1)
+				setListSubregions(regions.filter(regionelem => mapid === regionelem.parentid))
+			else
+				setListSubregions(regions.filter(regionelem => regionelem._id === data.parentid));
+		}
 		else
 			setInactive();
 		toggleShowCreate(false);
@@ -302,7 +319,7 @@ const Homescreen = (props) => {
 				isMapActive ?
 				showRegionView?
 				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
-				updateRegionParent = {updateRegionParent}></RegionViewerContents>
+				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
