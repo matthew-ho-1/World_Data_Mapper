@@ -200,6 +200,23 @@ const Homescreen = (props) => {
 		setSubregions(regions.filter(regionelem => regionelem.parentid === prevSibling._id))
 	}
 
+	const goToParent = (parent) =>{
+		if(parent._id === activeMap._id){
+			activeRegions.length = 1;
+			activeids.length = 1;
+			setActiveSubregion({})
+		}
+		else{
+			for(let i = 0; i < activeRegions.length; i++){
+				if(activeRegions[i]._id === parent._id){
+					activeRegions.length = i + 1;
+					activeids.length = i + 1;
+					setActiveSubregion(parent);
+				}
+			}
+		}
+	}
+
 	const handleSetActive = (_id) => {
 		const selectedList = maps.find(map => map._id === _id);
 		loadMap(selectedList);
@@ -216,6 +233,7 @@ const Homescreen = (props) => {
 	const setInactive = () =>{
 		setActiveMap("")
 		setActiveSubregion("");
+		setActiveids([]);
 		toggleRegionView(false)
 		setActiveRegions([])
 	}
@@ -299,7 +317,7 @@ const Homescreen = (props) => {
 					<ul>
 						<WNavItem>
 							<Logo className='logo' setInactive = {setInactive} activeMap = {activeMap._id} activeRegions = {activeRegions}
-							setActiveMap = {setActiveMap} setActiveSubregion = {setActiveSubregion}/>
+							setActiveMap = {setActiveMap} setActiveSubregion = {setActiveSubregion} goToParent = {goToParent}/>
 						</WNavItem>
 					</ul>
 					<ul>
