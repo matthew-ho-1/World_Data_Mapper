@@ -9,6 +9,7 @@ const RegionViewerContents = (props) => {
     let landmarks = props.getRegion.landmarks;
     const numOfRegions = "# of Sub Regions: " + props.subregions.length;
     const [editingParent, toggleParentEdit] = useState(false);
+    console.log(props.listSubregions)
     let index = -1;
     for(let i = 0; i < props.listSubregions.length; i++){
         if(props.getRegion._id === props.listSubregions[i]._id)

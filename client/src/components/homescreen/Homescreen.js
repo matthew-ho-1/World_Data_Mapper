@@ -280,7 +280,7 @@ const Homescreen = (props) => {
 			if(activeRegions.length === 1)
 				setListSubregions(regions.filter(regionelem => mapid === regionelem.parentid))
 			else
-				setListSubregions(regions.filter(regionelem => regionelem._id === data.parentid));
+				setListSubregions(regions.filter(regionelem => regionelem.parentid === data.parentid));
 		}
 		else
 			setInactive();
