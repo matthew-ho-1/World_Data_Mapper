@@ -3,6 +3,7 @@ import EarthPic							from '../Pictures/earth.jpg'
 import Login 							from '../modals/Login';
 import DeleteMapModal					from '../modals/DeleteMap'
 import DeleteRegionModal				from '../modals/DeleteRegion';
+import DeleteLandmarkModal				from '../modals/DeleteLandmark';
 import CreateAccount 					from '../modals/CreateAccount';
 import UpdateAccount					from '../modals/UpdateAccount';
 import NameMap							from '../modals/NameMap';
@@ -53,6 +54,7 @@ const Homescreen = (props) => {
 	const [activeids, setActiveids]			= useState([])
 	const [showDeleteMap, toggleShowDeleteMap] 	= useState(false);
 	const [showDeleteRegion, toggleShowDeleteRegion] = useState(false);
+	const [showDeleteLandmark, toggleShowDeleteLandmark] = useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
 	const [showCreate, toggleShowCreate] 	= useState(false);
 	const [showUpdate, toggleShowUpdate] 	= useState(false);
@@ -60,6 +62,7 @@ const Homescreen = (props) => {
 	const [showRegionView, toggleRegionView] = useState(false);
 	const [selectedMap, setSelectedMap]		= useState("");
 	const [selectedRegion, setSelectedRegion] = useState("");
+	const [selectedLandmark, setSelectedLandmark] = useState([])
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 	const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
@@ -102,6 +105,7 @@ const Homescreen = (props) => {
 	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP, mutationOptions);
 	const [UpdateRegionParent] 	= useMutation(mutations.UPDATE_REGION_PARENT, mutationOptions);
 	const [AddRegionLandmark]	= useMutation(mutations.ADD_REGION_LANDMARK, mutationOptions)
+	const [DeleteRegionLandmark] = useMutation(mutations.DELETE_REGION_LANDMARK, mutationOptions)
 
 	
 	const tpsUndo = async () => {
@@ -196,6 +200,12 @@ const Homescreen = (props) => {
 			alert("Landmark Already Exists.")
 	}
 
+	const deleteLandmark = async() =>{
+		let regionid = selectedLandmark[0];
+		let landmark = selectedLandmark[1];
+		const { data } = await DeleteRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid, landmark: landmark}})
+	}
+
 	const goToNextSibling = (nextSibling) =>{
 		setRegion(nextSibling);
 		let regions = MapData[0].regions;
@@ -236,6 +246,12 @@ const Homescreen = (props) => {
 
 	const setRegionToDelete = (_id) =>{
 		setSelectedRegion(_id);
+	}
+
+	const setLandmarkToDelete = (_id, landmark) =>{
+		selectedLandmark.length = 0;
+		selectedLandmark.push(_id);
+		selectedLandmark.push(landmark)
 	}
 
 	const setInactive = () =>{
@@ -282,6 +298,17 @@ const Homescreen = (props) => {
 		toggleShowDeleteMap(false);
 		toggleShowDeleteRegion(!showDeleteRegion);
 	};
+
+	const setShowDeleteLandmark = (id, landmark) =>{
+		setLandmarkToDelete(id, landmark);
+		toggleShowCreate(false);
+		toggleShowLogin(false);
+		toggleShowUpdate(false);
+		toggleShowNameMap(false);
+		toggleShowDeleteMap(false);
+		toggleShowDeleteRegion(false);
+		toggleShowDeleteLandmark(!showDeleteLandmark)
+	}
 
 	const setShowUpdate = () => {
 		toggleShowCreate(false);
@@ -348,7 +375,7 @@ const Homescreen = (props) => {
 				showRegionView?
 				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
 				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}
-				addNewLandmark = {addNewLandmark} refetch ={refetch} MapData = {MapData}></RegionViewerContents>
+				addNewLandmark = {addNewLandmark} MapData = {MapData} deleteLandmark = {deleteLandmark} setShowDeleteLandmark = {setShowDeleteLandmark}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
@@ -377,6 +404,11 @@ const Homescreen = (props) => {
 			{
 				showDeleteRegion && (<DeleteRegionModal setShowDeleteRegion={setShowDeleteRegion} setShowDeletRegion = {setShowDeleteRegion} 
 					activeid = {selectedRegion} deleteRegion = {deleteRegion}></DeleteRegionModal>)
+			}
+
+			{
+				showDeleteLandmark && (<DeleteLandmarkModal deleteLandmark = {deleteLandmark} setShowDeleteLandmark = {setShowDeleteLandmark}
+				selectedLandmark = {selectedLandmark}></DeleteLandmarkModal>)
 			}
 
 			{

@@ -138,7 +138,7 @@ const RegionViewerContents = (props) => {
                         </div>
                     </WLHeader>
                     <WSidebar style = {{width: "800px", height: "750px", backgroundColor: "#20567d"}}>
-                        <LandmarkContents landmarks = {landmarks}></LandmarkContents>
+                        <LandmarkContents landmarks = {landmarks} setShowDeleteLandmark = {props.setShowDeleteLandmark} region = {props.getRegion}></LandmarkContents>
                     </WSidebar>
                 </WLMain>
             </WLayout>

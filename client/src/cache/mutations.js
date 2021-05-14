@@ -129,6 +129,12 @@ export const ADD_REGION_LANDMARK = gql`
 	}
 `;
 
+export const DELETE_REGION_LANDMARK = gql`
+	mutation DeleteRegionLandmark($_id: String!, $regionid: String!, $landmark: String!) {
+		deleteRegionLandmark(_id: $_id, regionid: $regionid, landmark: $landmark)
+	}
+`;
+
 
 
 

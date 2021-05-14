@@ -12,7 +12,8 @@ const LandmarkContents = (props) => {
         entries.length > 0 ? <div className= 'landmark-entries'>{
             entries.map((entry, index) => (
                 <LandmarkEntry
-                    data = {entry} key = {index} index = {index} entryCount = {entryCount}
+                    data = {entry} key = {index} index = {index} entryCount = {entryCount} deleteLandmark = {props.deleteLandmark} setShowDeleteLandmark = {props.setShowDeleteLandmark}
+                    region = {props.region}
                 />
             ))
         }

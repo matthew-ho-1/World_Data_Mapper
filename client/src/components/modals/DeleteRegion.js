@@ -11,7 +11,7 @@ const DeleteRegion= (props) => {
 
     return (
         <WModal className="delete-modal" cover="true" visible={props.setShowDeleteRegion}>
-            <WMHeader  className="modal-header" onClose={() => props.setShowDeleteRegion(false)}>
+            <WMHeader  className="modal-header" onClose={() => props.setShowDeleteRegion()}>
                 Delete Region?
 			</WMHeader >
 

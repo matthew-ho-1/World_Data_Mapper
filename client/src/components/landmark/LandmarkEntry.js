@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { WButton, WInput, WRow, WCol} from 'wt-frontend';
 
 const LandmarkEntry = (props) => {
-    console.log(props.data)
+    const handleDelete = () =>{
+        props.setShowDeleteLandmark(props.region._id, props.data)
+    }
+    
     return (
        <WRow className = "landmark-entry" style = {{fontSize: "20px"}}>
            <WCol size = "1">
-            <WButton className="table-entry-buttons" wType="texted">
-                            <i className="material-icons md-24">close</i>
+            <WButton className="table-entry-buttons" wType="texted" onClick = {handleDelete}>
+                <i className="material-icons md-24">close</i>
             </WButton>
            </WCol>
            <WCol size = "11">

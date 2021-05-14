@@ -226,5 +226,31 @@ module.exports = {
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (landmark);
 		},
+		/** 
+		 	@param 	 {object} args - a map id, an region object, and landmark
+			@returns {boolean} successful remove or not
+		**/
+		deleteRegionLandmark: async(_, args) => {
+			const { _id, regionid , landmark} = args;
+			const listId = new ObjectId(_id);
+			const found = await Map.findOne({_id: _id});
+			let listRegions = found.regions;
+			const field = "landmarks";
+			let listLandmarks = [];
+			let newLandmarks = [];
+			listRegions.map(region => {
+				if(region._id.toString() === regionid) {	
+					listLandmarks = region[field];
+					for(let landmarkelem of listLandmarks){
+						if(landmark !== landmarkelem)
+							newLandmarks.push(landmarkelem);
+					}
+					region[field] = newLandmarks;
+				}
+			});
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
+			if(updated) return (true);
+			return false
+		},
 	}
 }
