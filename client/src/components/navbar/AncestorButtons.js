@@ -7,6 +7,7 @@ const AncestorButtons= (props) => {
 
     const handleMoveToParent = () =>{
         props.goToParent(props.activeRegions[index]);
+        props.toggleRegionView(false);
     }
 
     return (

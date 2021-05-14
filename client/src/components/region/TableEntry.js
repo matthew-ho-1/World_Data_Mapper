@@ -6,7 +6,7 @@ const TableEntry = (props) => {
     const name = data.name;
     const capital = data.capital;
     const leader = data.leader;
-    const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + "...";
+    const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + ", ...";
 
     const [editingName, toggleNameEdit] = useState(false);
     const [editingCapital, toggleCapitalEdit] = useState(false);

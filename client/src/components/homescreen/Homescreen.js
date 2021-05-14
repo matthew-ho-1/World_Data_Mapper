@@ -99,8 +99,9 @@ const Homescreen = (props) => {
 	const [UpdateMapField] 			= useMutation(mutations.UPDATE_MAP_FIELD, mutationOptions);
 	const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION, mutationOptions);
 	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
-	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
-	const [UpdateRegionParent] 	= useMutation(mutations.UPDATE_REGION_PARENT);
+	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP, mutationOptions);
+	const [UpdateRegionParent] 	= useMutation(mutations.UPDATE_REGION_PARENT, mutationOptions);
+	const [AddRegionLandmark]	= useMutation(mutations.ADD_REGION_LANDMARK, mutationOptions)
 
 	
 	const tpsUndo = async () => {
@@ -188,6 +189,13 @@ const Homescreen = (props) => {
 			alert("Parent not found.")
 	}
 
+	const addNewLandmark = async(landmark, regionid) =>{
+		const { data } = await AddRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid._id, landmark: landmark}})
+		let name = data.addRegionLandmark;
+		if(name === "error")
+			alert("Landmark Already Exists.")
+	}
+
 	const goToNextSibling = (nextSibling) =>{
 		setRegion(nextSibling);
 		let regions = MapData[0].regions;
@@ -235,6 +243,8 @@ const Homescreen = (props) => {
 		setActiveSubregion("");
 		setActiveids([]);
 		toggleRegionView(false)
+		setRegion({})
+		setListSubregions([])
 		setActiveRegions([])
 	}
 
@@ -317,7 +327,7 @@ const Homescreen = (props) => {
 					<ul>
 						<WNavItem>
 							<Logo className='logo' setInactive = {setInactive} activeMap = {activeMap._id} activeRegions = {activeRegions}
-							setActiveMap = {setActiveMap} setActiveSubregion = {setActiveSubregion} goToParent = {goToParent}/>
+							setActiveMap = {setActiveMap} setActiveSubregion = {setActiveSubregion} goToParent = {goToParent} toggleRegionView = {toggleRegionView}/>
 						</WNavItem>
 					</ul>
 					<ul>
@@ -337,7 +347,8 @@ const Homescreen = (props) => {
 				isMapActive ?
 				showRegionView?
 				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
-				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}></RegionViewerContents>
+				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}
+				addNewLandmark = {addNewLandmark} refetch ={refetch} MapData = {MapData}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}

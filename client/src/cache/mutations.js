@@ -73,18 +73,6 @@ export const UPDATE_REGION= gql`
 	}
 `;
 
-export const REORDER_ITEMS = gql`
-	mutation ReorderItems($_id: String!, $itemId: String!, $direction: Int!) {
-		reorderItems(_id: $_id, itemId: $itemId, direction: $direction) {
-			_id
-			description
-			due_date
-			assigned_to
-			completed
-		}
-	}
-`;
-
 export const SORT_REGIONS= gql`
 	mutation SortRegions($_id: String!, $criteria: String!, $parentid: String!) {
 		sortRegions(_id: $_id, criteria: $criteria, parentid: $parentid) {
@@ -134,5 +122,13 @@ export const UPDATE_REGION_PARENT = gql`
 		updateRegionParent(_id: $_id, regionid: $regionid, newparent: $newparent)
 	}
 `;
+
+export const ADD_REGION_LANDMARK = gql`
+	mutation AddRegionLandmark($_id: String!, $regionid: String!, $landmark: String!) {
+		addRegionLandmark(_id: $_id, regionid: $regionid, landmark: $landmark)
+	}
+`;
+
+
 
 

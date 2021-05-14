@@ -3,13 +3,25 @@ import { WLayout, WLHeader, WLMain, WButton, WSidebar, WCard, WLSide, WInput} fr
 import LandmarkContents from '../landmark/LandmarkContents';
 
 const RegionViewerContents = (props) => {
+    let landmarks = [];
+    let newlandmarks;
+    let mapdata = props.MapData[0].regions;
+    for(let mapelem of mapdata){
+        if(mapelem._id === props.getRegion._id){
+            newlandmarks = mapelem.landmarks;
+        }
+    }
+    for(let i = 0; i < newlandmarks.length; i++){
+        landmarks[i] = newlandmarks[i];
+    }
+
     const name = "Region Name: " + props.getRegion.name;
     const capital =  "Regional Capital: " + props.getRegion.capital;
     const leader = "Regional Leader: " + props.getRegion.leader;
-    let landmarks = props.getRegion.landmarks;
     const numOfRegions = "# of Sub Regions: " + props.subregions.length;
     const [editingParent, toggleParentEdit] = useState(false);
-    console.log(props.listSubregions)
+    const [landmarkInput, setLandmark]  = useState("");
+
     let index = -1;
     for(let i = 0; i < props.listSubregions.length; i++){
         if(props.getRegion._id === props.listSubregions[i]._id)
@@ -17,11 +29,15 @@ const RegionViewerContents = (props) => {
     }
     const nextVisible = index === props.listSubregions.length - 1 ? true : false;
     const prevVisible = index === 0 ? true : false;
+
     const handleParentEdit = (e) =>{
         let newParent = e.target.value;
+        let oldParent = props.activeRegions[props.activeRegions.length - 1].name
         toggleParentEdit(false);
-        props.updateRegionParent(props.getRegion._id, newParent);
-        props.setShowRegionView();
+        if(newParent !== oldParent){
+            props.updateRegionParent(props.getRegion._id, newParent);
+            props.setShowRegionView();
+        }
     }
 
     const handlePrevSibling = () =>{
@@ -30,6 +46,23 @@ const RegionViewerContents = (props) => {
 
     const handleNextSibling = () =>{
         props.goToNextSibling(props.listSubregions[index+1]);
+    }
+
+    const handleAddLandmark = () =>{
+        if(landmarkInput !== '')
+            props.addNewLandmark(landmarkInput, props.getRegion)
+    }
+
+    const updateLandmark = (e)=>{
+        if(e.type === "keydown"){
+            let landmark = e.target.value
+            if(landmark !== '')
+                props.addNewLandmark(landmark, props.getRegion);
+        }
+        else{
+            const landmarkName = e.target.value;
+            setLandmark(landmarkName);
+        }
     }
 
 
@@ -87,14 +120,25 @@ const RegionViewerContents = (props) => {
                 </div>
                 </WLSide>
                 <WLMain style = {{width: "921px", marginLeft: "700px"}}>
-                    <WLHeader style = {{color: "white", fontSize: "25px"}}>
-                        <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded">
-                            <i className="material-icons md-24"  style = {{color: "#1ddbdb"}}>add_box</i>
-                        </WButton>
-                        <div className = "region-landmark">Region Landmarks:</div>
+                    <WLHeader style = {{marginBottom: "10px"}}>
+                        <div className = "region-landmark" style = {{color: "white", fontSize: "25px", display: "inline-block"}}>Region Landmarks:</div>
+                        <div className = "add-landmark" style = {{display: "inline-block"}}>
+                            <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded" onClick = {handleAddLandmark}>
+                                    <i className="material-icons md-24"  style = {{color: "#1ddbdb"}}>add_box</i>
+                            </WButton>
+                            <div className = "add-landmark-input" style = {{display: "inline-block"}}>
+                            {
+                                <WInput
+                                style = {{width: "500px"}}onBlur={updateLandmark}
+                                onKeyDown={(e) => {if(e.keyCode === 13) updateLandmark(e)}}
+                                autoFocus={true} placeholderText = "Add New Landmark Here" type='text'
+                            />
+                            }
+                            </div>
+                        </div>
                     </WLHeader>
                     <WSidebar style = {{width: "800px", height: "750px", backgroundColor: "#20567d"}}>
-
+                        <LandmarkContents landmarks = {landmarks}></LandmarkContents>
                     </WSidebar>
                 </WLMain>
             </WLayout>

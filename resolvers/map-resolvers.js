@@ -196,5 +196,35 @@ module.exports = {
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (newparentname);
 		},
+		/** 
+		 	@param 	 {object} args - a map id, an region object, and landmark
+			@returns {string} the objectID of the region or an error message
+		**/
+		addRegionLandmark: async(_, args) => {
+			const { _id, regionid , landmark} = args;
+			const listId = new ObjectId(_id);
+			const found = await Map.findOne({_id: _id});
+			let listRegions = found.regions;
+			const field = "landmarks";
+			let listLandmarks = [];
+			let error = "";
+			listRegions.map(region => {
+					let tempLandmark = region[field];
+					for(let landmarkelem of tempLandmark){
+						if(landmarkelem.toLowerCase() === landmark.toLowerCase())
+							error = "found";
+					}
+			});
+			if(error === "found"){ return "error"}
+			listRegions.map(region => {
+				if(region._id.toString() === regionid) {	
+					listLandmarks = region[field];
+					listLandmarks.push(landmark)
+					region[field] = listLandmarks;
+				}
+			});
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
+			if(updated) return (landmark);
+		},
 	}
 }

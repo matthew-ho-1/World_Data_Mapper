@@ -166,6 +166,16 @@ html, body {
     height: 60px;
 }
 
+.landmark-entry{
+    color: $text-color;
+    transition: 0.05s ease-in-out;
+    height: 60px;
+}
+
+.landmark-entry:hover {
+    background-color: var(--warm-white-transparent);
+}
+
 .table-entry:hover {
     background-color: var(--warm-white-transparent);
 }

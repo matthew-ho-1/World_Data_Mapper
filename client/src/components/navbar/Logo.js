@@ -15,7 +15,8 @@ const Logo = (props) => {
             </WButton>
             <div className = "ancestor-buttons" style = {{display: "inline-block"}}>
             {   
-                regions.map((region, index) => (<AncestorButtons activeRegions = {props.activeRegions} goToParent = {props.goToParent} data = {region} key={region._id} index={index - 1}>
+                regions.map((region, index) => (<AncestorButtons activeRegions = {props.activeRegions} goToParent = {props.goToParent} data = {region} key={region._id} index={index - 1}
+                toggleRegionView = {props.toggleRegionView}>
                 </AncestorButtons>))
             }
             </div>

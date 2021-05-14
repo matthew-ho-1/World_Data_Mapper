@@ -1,38 +1,23 @@
 import React, { useState } from 'react';
-import { WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { WButton, WInput, WRow, WCol} from 'wt-frontend';
 
 const LandmarkEntry = (props) => {
+    console.log(props.data)
     return (
-        <WRow className='table-entry'>
-            <WCol size="1">
-                
-            </WCol>
-            <WCol size="2">
+       <WRow className = "landmark-entry" style = {{fontSize: "20px"}}>
+           <WCol size = "1">
+            <WButton className="table-entry-buttons" wType="texted">
+                            <i className="material-icons md-24">close</i>
+            </WButton>
+           </WCol>
+           <WCol size = "11">
+                <div className = "landmark" style = {{paddingTop: "10px"}}>
                 {
-                    <div className="table-text">{name}</div>
+                    props.data
                 }
-            </WCol>
-
-            <WCol size="2">
-                {
-                   <div className="table-text">{capital}</div>
-                }
-            </WCol>
-
-            <WCol size="2">
-                {
-                    <div className= "table-text">{leader}</div>
-                }
-            </WCol>
-            <WCol size="2">
-        
-            </WCol>
-            <WCol size="3" onClick = {handleShowRegionView}>
-                {
-                    <div className= "table-text">{landmarks}</div>
-                }
-            </WCol>
-        </WRow>
+                </div>
+           </WCol>
+       </WRow>
     );
 };
 
