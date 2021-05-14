@@ -1,4 +1,4 @@
-import React            from 'react';
+import React, { useState }  from 'react';
 import { WLayout, WLHeader, WLMain, WButton, WSidebar, WCard, WLSide, WInput} from 'wt-frontend';
 import LandmarkContents from '../landmark/LandmarkContents';
 
@@ -8,6 +8,15 @@ const RegionViewerContents = (props) => {
     const leader = "Regional Leader: " + props.getRegion.leader;
     let landmarks = props.getRegion.landmarks;
     const numOfRegions = "# of Sub Regions: " + props.subregions.length;
+    const [editingParent, toggleParentEdit] = useState(false);
+
+    const handleParentEdit = (e) =>{
+        let newParent = e.target.value;
+        let oldParent = props.activeRegions[props.activeRegions.length - 1].name;
+        toggleParentEdit(false);
+        props.updateRegionParent(props.getRegion._id, newParent);
+        props.setShowRegionView()
+    }
 
 
     return (
@@ -28,11 +37,27 @@ const RegionViewerContents = (props) => {
                 <div className = "region-info">
                         <div className = "Region Name" style = {{paddingBottom: "40px"}}>{name}</div>
                         <div className = "Region Name" style = {{paddingBottom: "40px"}}>
-                            Parent Region:
-                            <WButton wType = "transparent" style = {{color: "#1ddbdb"}} onClick = {props.setShowRegionView}>
+                            <div className = "Region Name" style = {{display: "inline-block"}}>Parent Region:</div>
                             {
-                                props.activeRegions[props.activeRegions.length - 1].name
+                                editingParent || props.activeRegions[props.activeRegions.length - 1].name === ' ' ?
+                                <div style = {{display: "inline-block"}}>
+                                <WInput
+                                onBlur={handleParentEdit}
+                                onKeyDown={(e) => {if(e.keyCode === 13) handleParentEdit(e)}}
+                                autoFocus={true} defaultValue={props.activeRegions[props.activeRegions.length - 1].name} type='text'
+                                />
+                                </div>
+                                :
+                                <div style = {{display: "inline-block"}}>
+                                <WButton wType = "transparent" style = {{color: "#1ddbdb", marginLeft:"10px"}} onClick = {props.setShowRegionView}>
+                                {
+                                    props.activeRegions[props.activeRegions.length - 1].name
+                                }
+                                </WButton>
+                                </div>
                             }
+                            <WButton className="table-entry-buttons" wType="texted" onClick = {() => toggleParentEdit(!editingParent)}>
+                                <i className="material-icons md-24">edit</i>
                             </WButton>
                             </div>
                         <div className = "Region Name" style = {{paddingBottom: "40px"}}>{capital}</div>

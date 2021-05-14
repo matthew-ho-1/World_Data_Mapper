@@ -162,6 +162,39 @@ module.exports = {
 			} 
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions, sortRule: criteria, sortDirection: newDirection })
 			if(updated) return (sortedRegions);
-		}
+		},
+		/** 
+			@param	 {object} args - a map objectID, an old parent objectID, and a new parent objectID
+			@returns {array} the updated region array on success, or the initial region array on failure
+		**/
+		updateRegionParent: async (_, args) => {
+			const { _id, regionid, newparent } = args;
+			const listId = new ObjectId(_id);
+			const found = await Map.findOne({_id: listId});
+			let listRegions = found.regions;
+			let mapName = found.name;
+			let mapid = found._id;
+			let newid = -1;
+			let newparentname;
+			if(mapName === newparent){
+				newid = mapid;
+			}
+			else{
+				for(let region of listRegions){
+					if(region.name.toLowerCase() === newparent.toLowerCase()){
+						newid = region._id;
+						newparentname = region.name;
+					}
+				}
+			}
+			if(newid === -1) return ("not found");
+			for(let i = 0; i < listRegions.length; i++){
+				if(listRegions[i]._id == regionid){
+					listRegions[i].parentid = newid;
+				}
+			}
+			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
+			if(updated) return (newparentname);
+		},
 	}
 }

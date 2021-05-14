@@ -59,9 +59,11 @@ const TableEntry = (props) => {
                 <WButton className="table-entry-buttons" wType="texted" onClick = {handleDeleteRegion}>
                          <i className="material-icons md-24">close</i>
                 </WButton>
-                <WButton className="table-entry-buttons" wType="texted" onClick  ={() => toggleNameEdit(!editingName)}>
-                         <i className="material-icons md-24">edit</i>
-                </WButton>
+                {
+                    <WButton className="table-entry-buttons" wType="texted" onClick  ={() => toggleNameEdit(!editingName)}>
+                      <i className="material-icons md-24">edit</i>
+                    </WButton>
+                }
             </WCol>
             <WCol size="2">
                 {

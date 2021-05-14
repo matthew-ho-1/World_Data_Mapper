@@ -99,6 +99,7 @@ const Homescreen = (props) => {
 	const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION, mutationOptions);
 	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
 	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
+	const [UpdateRegionParent] 	= useMutation(mutations.UPDATE_REGION_PARENT);
 
 	
 	const tpsUndo = async () => {
@@ -184,6 +185,9 @@ const Homescreen = (props) => {
 		const { data } = await SortRegions({ variables: {_id: activeMap._id, criteria: criteria, parentid: parentid}})
  	}
 
+	const updateRegionParent = async (currid, newparent) =>{
+		const { data } = await UpdateRegionParent({ variables: {_id: activeMap._id, regionid: currid, newparent: newparent}, refetchQueries: [{ query: GET_DB_MAPS }]})
+	}
 
 	const handleSetActive = (_id) => {
 		const selectedList = maps.find(map => map._id === _id);
@@ -259,7 +263,10 @@ const Homescreen = (props) => {
 	const setShowRegionView = (data) =>{
 		setRegion(data);
 		let regions = MapData[0].regions;
-		setSubregions(regions.filter(regionelem => regionelem.parentid === data._id));
+		if(data !== undefined)
+			setSubregions(regions.filter(regionelem => regionelem.parentid === data._id))
+		else
+			setInactive();
 		toggleShowCreate(false);
 		toggleShowLogin(false);
 		toggleShowDeleteMap(false);
@@ -281,8 +288,7 @@ const Homescreen = (props) => {
 					<ul>
 						<NavbarOptions
 							fetchUser={props.fetchUser} 	auth={auth} 
-							setShowCreate={setShowCreate} 	setShowLogin={setShowLogin}
-							reloadTodos={refetch} 			setActiveMap={loadMap}
+							setShowCreate={setShowCreate} 	setShowLogin={setShowLogin}	setActiveMap={loadMap}
 							getUser = {userName}			setShowUpdate = {setShowUpdate}
 
 						/>
@@ -295,7 +301,8 @@ const Homescreen = (props) => {
 				auth ? 
 				isMapActive ?
 				showRegionView?
-				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}></RegionViewerContents>
+				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
+				updateRegionParent = {updateRegionParent}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}

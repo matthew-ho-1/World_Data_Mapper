@@ -30,6 +30,7 @@ const typeDefs = gql `
 		deleteRegion(regionid: String!, _id: String!): [Region]
 		updateRegion(regionid: String!, _id: String!, field: String!, value: String!): [Region]
 		sortRegions(_id: String!, criteria: String!, parentid: String!): [Region]
+		updateRegionParent(_id: String!, regionid: String!, newparent: String!): String
 	}
 
 	input FieldInput {

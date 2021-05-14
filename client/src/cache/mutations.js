@@ -128,3 +128,11 @@ export const UPDATE_MAP_FIELD = gql`
 		updateMapField(_id: $_id, field: $field, value: $value)
 	}
 `;
+
+export const UPDATE_REGION_PARENT = gql`
+	mutation UpdateRegionParent($_id: String!, $regionid: String!, $newparent: String!) {
+		updateRegionParent(_id: $_id, regionid: $regionid, newparent: $newparent)
+	}
+`;
+
+
