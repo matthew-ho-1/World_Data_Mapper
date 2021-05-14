@@ -19,7 +19,7 @@ module.exports = {
 			if(maps) {
 				return (maps);
 			} 
-		}
+		},
 	},
 	Mutation: {
 		/** 
@@ -86,11 +86,6 @@ module.exports = {
 				else listRegions.splice(index, 0, region);
 			}
 			else{
-				for(const regionelem of listRegions){
-					if(location[location.length-1] === regionelem._id){
-						regionelem.subregions.push(objectId.toString());
-					}
-				}
 				listRegions.push(region);
 			}
 			const updated = await Map.updateOne({_id: listId}, {regions: listRegions});

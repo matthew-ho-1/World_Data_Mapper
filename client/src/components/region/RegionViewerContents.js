@@ -7,7 +7,8 @@ const RegionViewerContents = (props) => {
     const capital =  "Regional Capital: " + props.getRegion.capital;
     const leader = "Regional Leader: " + props.getRegion.leader;
     let landmarks = props.getRegion.landmarks;
-    const numOfRegions = "# of Sub Regions: " + props.getRegion.subregions.length;
+    const numOfRegions = "# of Sub Regions: " + props.subregions.length;
+
 
     return (
         <>

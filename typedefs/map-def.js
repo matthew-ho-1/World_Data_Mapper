@@ -17,7 +17,6 @@ const typeDefs = gql `
 		capital: String!
 		leader: String!
 		landmarks: [String!]!
-		subregions: [String!]!
 	}
 
 	extend type Query {
@@ -54,7 +53,6 @@ const typeDefs = gql `
 		capital: String!
 		leader: String!
 		landmarks: [String!]!
-		subregions: [String!]!
 	}
 `;
 

@@ -11,7 +11,7 @@ import MapContents						from '../map/MapContents'
 import RegionContents					from '../region/RegionContents';
 import RegionViewerContents				from '../region/RegionViewerContents';
 import * as mutations 					from '../../cache/mutations';
-import { GET_DB_MAPS } 				    from '../../cache/queries';
+import { GET_DB_MAPS} 	from '../../cache/queries';
 import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
@@ -44,6 +44,7 @@ const Homescreen = (props) => {
 	let maps 	= [];
 	let MapData = [];
 	const [sortRule, setSortRule] = useState('unsorted'); // 1 is ascending, -1 desc
+	const [subregions, setSubregions] 		= useState([]);
 	const [region, setRegion]				= useState(null);
 	const [activeMap, setActiveMap] 		= useState({});
 	const [activeSubregion, setActiveSubregion] = useState({});
@@ -136,8 +137,7 @@ const Homescreen = (props) => {
 			name: 'No Name',
 			capital: 'No Capital',
 			leader: 'No One',
-			landmarks: [],
-			subregions: [],
+			landmarks: []
 		} :
 		{
 			_id: '',
@@ -145,8 +145,7 @@ const Homescreen = (props) => {
 			name: 'No Name',
 			capital: 'No Capital',
 			leader: 'No One',
-			landmarks: [],
-			subregions: [],
+			landmarks: []
 		}
 		let opcode = 1;
 		let mapID = activeMap._id;
@@ -154,6 +153,11 @@ const Homescreen = (props) => {
 	};
 
 	const deleteRegion = async (_id) => {
+		let done = false;
+		while(!done){
+			console.log(_id);
+			done = true;
+		}
 		const { data } = await DeleteRegion({variables: {regionid: _id, _id: activeMap._id}})
 	};
 
@@ -163,6 +167,7 @@ const Homescreen = (props) => {
 
 
 	const deleteMap = async (_id) => {
+		console.log(_id);
 		DeleteMap({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_MAPS }] });
 		loadMap({});
 	};
@@ -178,7 +183,6 @@ const Homescreen = (props) => {
 		let parentid = activeids[activeids.length - 1];
 		const { data } = await SortRegions({ variables: {_id: activeMap._id, criteria: criteria, parentid: parentid}})
  	}
-
 
 
 	const handleSetActive = (_id) => {
@@ -254,6 +258,8 @@ const Homescreen = (props) => {
 
 	const setShowRegionView = (data) =>{
 		setRegion(data);
+		let regions = MapData[0].regions;
+		setSubregions(regions.filter(regionelem => regionelem.parentid === data._id));
 		toggleShowCreate(false);
 		toggleShowLogin(false);
 		toggleShowDeleteMap(false);
@@ -289,8 +295,7 @@ const Homescreen = (props) => {
 				auth ? 
 				isMapActive ?
 				showRegionView?
-				<RegionViewerContents getRegion = {region} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
-				activeRegions = {activeRegions}></RegionViewerContents>
+				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}

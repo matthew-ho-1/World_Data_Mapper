@@ -56,7 +56,6 @@ export const DELETE_REGION = gql`
 			capital
 			leader 
 			landmarks
-			subregions
 		}
 	} 
 `;
@@ -70,7 +69,6 @@ export const UPDATE_REGION= gql`
 			capital
 			leader 
 			landmarks
-			subregions
 		}
 	}
 `;
@@ -96,7 +94,6 @@ export const SORT_REGIONS= gql`
 			capital
 			leader 
 			landmarks
-			subregions
 		}
 	}
 `;
@@ -113,7 +110,6 @@ export const ADD_MAP = gql`
 				capital
 				leader
 				landmarks
-				subregions
 			}
 			sortRule
 			sortDirection
