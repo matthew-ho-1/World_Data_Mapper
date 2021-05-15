@@ -252,9 +252,13 @@ module.exports = {
 			const field = "landmarks";
 			let listLandmarks = [];
 			let newLandmarks = [];
+			let baseid;
+			let regionname;
 			listRegions.map(region => {
 				if(region._id.toString() === regionid) {	
 					listLandmarks = region[field];
+					baseid = regionid;
+					regionname = region.name;
 					for(let landmarkelem of listLandmarks){
 						if(landmark !== landmarkelem)
 							newLandmarks.push(landmarkelem);
@@ -262,6 +266,21 @@ module.exports = {
 					region[field] = newLandmarks;
 				}
 			});
+			regionname = landmark + " - " + regionname;
+			while(baseid !== _id){
+				newLandmarks = [];
+				listRegions.map(region => {
+					if(region._id.toString() === baseid) {	
+						listLandmarks = region[field];
+						for(let landmarkelem of listLandmarks){
+							if(regionname!== landmarkelem)
+								newLandmarks.push(landmarkelem);
+						}
+						region[field] = newLandmarks;
+						baseid = region.parentid;
+					}
+				});
+			}
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (true);
 			return false
@@ -278,6 +297,8 @@ module.exports = {
 			const field = "landmarks";
 			let listLandmarks = [];
 			let error = "";
+			let baseid;
+			let regionname;
 			listRegions.map(region => {
 					let tempLandmark = region[field];
 					for(let landmarkelem of tempLandmark){
@@ -289,6 +310,8 @@ module.exports = {
 			listRegions.map(region => {
 				if(region._id.toString() === regionid) {	
 					listLandmarks = region[field];
+					baseid = regionid;
+					regionname = region.name;
 					for(let i = 0; i < listLandmarks.length; i++){
 						if(listLandmarks[i] === oldlandmark)
 							listLandmarks[i] = newlandmark;
@@ -296,6 +319,19 @@ module.exports = {
 					region[field] = listLandmarks;
 				}
 			});
+			while(baseid !== _id){
+				listRegions.map(region => {
+					if(region._id.toString() === baseid) {	
+						listLandmarks = region[field];
+						for(let i = 0; i < listLandmarks.length; i++){
+							if(listLandmarks[i] === oldlandmark + " - " + regionname)
+								listLandmarks[i] = newlandmark + " - " + regionname;
+						}
+						region[field] = listLandmarks;
+						baseid = region.parentid;
+					}
+				});
+			}
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (newlandmark);
 		},
