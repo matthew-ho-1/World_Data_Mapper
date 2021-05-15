@@ -104,8 +104,9 @@ const Homescreen = (props) => {
 	const [AddRegion] 			= useMutation(mutations.ADD_REGION, mutationOptions);
 	const [DeleteMap] 			= useMutation(mutations.DELETE_MAP, mutationOptions);
 	const [UpdateRegionParent] 	= useMutation(mutations.UPDATE_REGION_PARENT, mutationOptions);
-	const [AddRegionLandmark]	= useMutation(mutations.ADD_REGION_LANDMARK, mutationOptions)
-	const [DeleteRegionLandmark] = useMutation(mutations.DELETE_REGION_LANDMARK, mutationOptions)
+	const [AddRegionLandmark]	= useMutation(mutations.ADD_REGION_LANDMARK, mutationOptions);
+	const [DeleteRegionLandmark] = useMutation(mutations.DELETE_REGION_LANDMARK, mutationOptions);
+	const [UpdateRegionLandmark] = useMutation(mutations.UPDATE_REGION_LANDMARK, mutationOptions);
 
 	
 	const tpsUndo = async () => {
@@ -204,6 +205,10 @@ const Homescreen = (props) => {
 		let regionid = selectedLandmark[0];
 		let landmark = selectedLandmark[1];
 		const { data } = await DeleteRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid, landmark: landmark}})
+	}
+
+	const updateLandmark = async(oldlandmark, newlandmark, regionid) =>{
+		const { data } = await UpdateRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid, newlandmark:  newlandmark, oldlandmark: oldlandmark}})
 	}
 
 	const goToNextSibling = (nextSibling) =>{
@@ -375,7 +380,8 @@ const Homescreen = (props) => {
 				showRegionView?
 				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
 				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}
-				addNewLandmark = {addNewLandmark} MapData = {MapData} deleteLandmark = {deleteLandmark} setShowDeleteLandmark = {setShowDeleteLandmark}></RegionViewerContents>
+				addNewLandmark = {addNewLandmark} MapData = {MapData} deleteLandmark = {deleteLandmark} setShowDeleteLandmark = {setShowDeleteLandmark}
+				updateLandmark = {updateLandmark}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}

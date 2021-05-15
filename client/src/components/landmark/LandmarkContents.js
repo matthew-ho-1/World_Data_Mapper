@@ -13,7 +13,7 @@ const LandmarkContents = (props) => {
             entries.map((entry, index) => (
                 <LandmarkEntry
                     data = {entry} key = {index} index = {index} entryCount = {entryCount} deleteLandmark = {props.deleteLandmark} setShowDeleteLandmark = {props.setShowDeleteLandmark}
-                    region = {props.region}
+                    region = {props.region} updateLandmark = {props.updateLandmark}
                 />
             ))
         }

@@ -135,6 +135,12 @@ export const DELETE_REGION_LANDMARK = gql`
 	}
 `;
 
+export const UPDATE_REGION_LANDMARK = gql`
+	mutation UpdateRegionLandmark($_id: String!, $regionid: String!, $newlandmark: String!, $oldlandmark: String!) {
+		updateRegionLandmark(_id: $_id, regionid: $regionid, newlandmark: $newlandmark, oldlandmark: $oldlandmark)
+	}
+`;
+
 
 
 
