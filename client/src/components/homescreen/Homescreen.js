@@ -15,8 +15,8 @@ import * as mutations 					from '../../cache/mutations';
 import { GET_DB_MAPS} 	from '../../cache/queries';
 import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
-import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
-import { WLayout, WLHeader, WLMain, WLSide, WButton} from 'wt-frontend';
+import { WNavbar, WNavItem } 	from 'wt-frontend';
+import { WLayout, WLHeader, WLMain} from 'wt-frontend';
 import {  SortRegion_Transaction,
 	UpdateRegion_Transaction, 
 	EditRegion_Transaction,
@@ -473,8 +473,8 @@ const Homescreen = (props) => {
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
-					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion} setShowRegionView = {setShowRegionView} 
-					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion} sort = {sort} 
+					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion}
+					 activeRegions = {activeRegions} editRegion = {editRegion} sort = {sort} 
 					 tpsUndo = {tpsUndo} tpsRedo = {tpsRedo} canUndo = {canUndo} canRedo = {canRedo}>  
 				</RegionContents>
 				:

@@ -192,6 +192,7 @@ export class UpdateLandmark_Transaction extends jsTPS_Transaction {
 							variables: {_id: this.listID, regionid: this.regionID, landmark: this.landmark}})
                           : { data } = await this.addFunction({
 							variables: {_id: this.listID, regionid: this.regionID, landmark: this.landmark, index: this.index}});
+        return data;
     }
 }
 

@@ -1,5 +1,4 @@
 import React        from 'react';
-import {WSidebar} from 'wt-frontend';
 import LandmarkEntry from './LandmarkEntry';
 
 const LandmarkContents = (props) => {

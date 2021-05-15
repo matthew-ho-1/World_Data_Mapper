@@ -1,5 +1,5 @@
 import React            from 'react';
-import { WLayout, WLHeader, WLMain, WLSidebar, WButton, WSidebar} from 'wt-frontend';
+import {WSidebar} from 'wt-frontend';
 import RegionHeader      from './RegionHeader';
 import TableContents        from './TableContents';
 import TableHeader          from './TableHeader';
