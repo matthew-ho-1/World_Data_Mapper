@@ -216,13 +216,27 @@ module.exports = {
 					}
 			});
 			if(error === "found"){ return "error"}
+			let baseid;
+			let regionname;
 			listRegions.map(region => {
 				if(region._id.toString() === regionid) {	
 					listLandmarks = region[field];
 					listLandmarks.push(landmark)
 					region[field] = listLandmarks;
+					baseid = region.parentid;
+					regionname = region.name;
 				}
 			});
+			while(baseid !== _id){
+				listRegions.map(region => {
+					if(region._id.toString() === baseid) {	
+						listLandmarks = region[field];
+						listLandmarks.push(landmark + " - " + regionname)
+						region[field] = listLandmarks;
+						baseid = region.parentid;
+					}
+				});
+			}
 			const updated = await Map.updateOne({_id: listId}, { regions: listRegions})
 			if(updated) return (landmark);
 		},

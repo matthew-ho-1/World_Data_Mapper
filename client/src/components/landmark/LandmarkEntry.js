@@ -3,6 +3,7 @@ import { WButton, WInput, WRow, WCol} from 'wt-frontend';
 
 const LandmarkEntry = (props) => {
     const [editingLandmark, toggleLandmarkEdit] = useState(false);
+    const isApartOfRegion = props.data.includes(" - ") ? true : false
 
     const handleDelete = () =>{
         props.setShowDeleteLandmark(props.region._id, props.data)
@@ -19,13 +20,15 @@ const LandmarkEntry = (props) => {
     return (
        <WRow className = "landmark-entry" style = {{fontSize: "20px"}}>
            <WCol size = "1">
-            <WButton className="table-entry-buttons" wType="texted" onClick = {handleDelete}>
-                <i className="material-icons md-24">close</i>
-            </WButton>
+            {
+                <WButton className="table-entry-buttons" wType="texted" onClick = {handleDelete} style = {{visibility: !isApartOfRegion ? "visible" : "hidden"}}>
+                    <i className="material-icons md-24">close</i>
+                </WButton>
+            }
            </WCol>
            <WCol size = "11">
             {
-                editingLandmark || props.data === ' ' ? 
+                (editingLandmark || props.data === ' ') && !isApartOfRegion ? 
                 <WInput
                 className='table-input' onBlur={handleLandmarkEdit}
                 onKeyDown={(e) => {if(e.keyCode === 13) handleLandmarkEdit(e)}}
