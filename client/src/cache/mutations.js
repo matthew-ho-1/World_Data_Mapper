@@ -124,8 +124,8 @@ export const UPDATE_REGION_PARENT = gql`
 `;
 
 export const ADD_REGION_LANDMARK = gql`
-	mutation AddRegionLandmark($_id: String!, $regionid: String!, $landmark: String!) {
-		addRegionLandmark(_id: $_id, regionid: $regionid, landmark: $landmark)
+	mutation AddRegionLandmark($_id: String!, $regionid: String!, $landmark: String!, $index: Int!) {
+		addRegionLandmark(_id: $_id, regionid: $regionid, landmark: $landmark, index: $index)
 	}
 `;
 

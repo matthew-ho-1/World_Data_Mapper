@@ -3,16 +3,39 @@ import { WLayout, WLHeader, WLMain, WButton, WSidebar, WCard, WLSide, WInput} fr
 import LandmarkContents from '../landmark/LandmarkContents';
 
 const RegionViewerContents = (props) => {
+    const clickDisabled = () => { };
+    const undoOptions = {
+        className: !props.canUndo ? 'region-buttons-disabled' : 'region-buttons',
+        onClick: !props.canUndo  ? clickDisabled : props.tpsUndo,
+        clickAnimation: !props.canUndo ? "" : "ripple-light",  
+        shape: "rounded",
+        wType: "texted",
+        style: {visibility: !props.canUndo ? "hidden" : "visible"}
+    }
+
+    const redoOptions = {
+        className: !props.canRedo ? 'region-buttons-disabled' : 'region-buttons',
+        onClick: !props.canRedo ? clickDisabled : props.tpsRedo, 
+        clickAnimation: !props.canRedo ? "" : "ripple-light" ,
+        shape: "rounded",
+        wType: "texted",
+        style: {visibility: !props.canRedo ? "hidden" : "visible"}
+    }
+
     let landmarks = [];
-    let newlandmarks;
+    let parent;
     let mapdata = props.MapData[0].regions;
     for(let mapelem of mapdata){
         if(mapelem._id === props.getRegion._id){
-            newlandmarks = mapelem.landmarks;
+            landmarks = mapelem.landmarks;
         }
     }
-    for(let i = 0; i < newlandmarks.length; i++){
-        landmarks[i] = newlandmarks[i];
+    if(props.activeMap._id === props.getRegion.parentid)
+        parent = props.activeMap.name
+    for(let mapelem of mapdata){
+        if(mapelem._id === props.getRegion.parentid){
+            parent = mapelem.name;
+        }
     }
 
     const name = "Region Name: " + props.getRegion.name;
@@ -31,13 +54,13 @@ const RegionViewerContents = (props) => {
     const prevVisible = index === 0 ? true : false;
 
     const handleParentEdit = (e) =>{
-        let newParent = e.target.value;
-        let oldParent = props.activeRegions[props.activeRegions.length - 1].name
-        toggleParentEdit(false);
-        if(newParent !== oldParent){
-            props.updateRegionParent(props.getRegion._id, newParent);
-            props.setShowRegionView();
-        }
+        // let newParent = e.target.value;
+        // let oldParent = parent;
+        // toggleParentEdit(false);
+        // if(newParent !== oldParent){
+        //     props.updateRegionParent(props.getRegion._id, newParent);
+        //     props.resetActiveRegions();
+        // }
     }
 
     const handlePrevSibling = () =>{
@@ -71,10 +94,10 @@ const RegionViewerContents = (props) => {
             <WLayout wLayout = "lside">
                 <WLSide side = "left" style = {{width: "1000px", height: "700px", marginLeft: "40px"}}>
                    <WLHeader>
-                    <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded">
+                    <WButton {...undoOptions}>
                         <i className="material-icons md-24" style = {{color: "white"}}>undo</i>
                     </WButton>
-                    <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded">
+                    <WButton {...redoOptions}>
                         <i className="material-icons md-24" style = {{color: "white"}}>redo</i>
                     </WButton>
                     <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "500px", visibility: prevVisible ? "hidden" : "visible"}} 
@@ -93,19 +116,19 @@ const RegionViewerContents = (props) => {
                         <div className = "Region Name" style = {{paddingBottom: "40px"}}>
                             <div className = "Region Name" style = {{display: "inline-block"}}>Parent Region:</div>
                             {
-                                editingParent || props.activeRegions[props.activeRegions.length - 1].name === ' ' ?
+                                editingParent || parent === ' ' ?
                                 <div style = {{display: "inline-block"}}>
                                 <WInput
                                 onBlur={handleParentEdit}
                                 onKeyDown={(e) => {if(e.keyCode === 13) handleParentEdit(e)}}
-                                autoFocus={true} defaultValue={props.activeRegions[props.activeRegions.length - 1].name} type='text'
+                                autoFocus={true} defaultValue={parent} type='text'
                                 />
                                 </div>
                                 :
                                 <div style = {{display: "inline-block"}}>
                                 <WButton wType = "transparent" style = {{color: "#1ddbdb", marginLeft:"10px"}} onClick = {props.setShowRegionView}>
                                 {
-                                    props.activeRegions[props.activeRegions.length - 1].name
+                                    parent
                                 }
                                 </WButton>
                                 </div>

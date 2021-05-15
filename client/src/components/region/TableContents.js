@@ -12,7 +12,7 @@ const TableContents = (props) => {
     let entriesSubregion = props.activeSubregion ? true : null;
     let entryCountSubregion = 0;
     if(entriesSubregion) {
-        entriesSubregion = regions.filter(entry => entry !== null && entry.parentid == props.activeRegions[props.activeRegions.length - 1]._id);
+        entriesSubregion = regions.filter(entry => entry !== null && entry.parentid === props.activeRegions[props.activeRegions.length - 1]._id);
         entryCountSubregion = entriesSubregion.length
     } 
      return (

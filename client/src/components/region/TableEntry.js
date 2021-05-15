@@ -17,7 +17,7 @@ const TableEntry = (props) => {
         const newName = e.target.value ? e.target.value : "No Name";
         const prevName = name;
         if(newName !== prevName){
-            props.editRegion(data._id, 'name', newName);
+            props.editRegion(data._id, 'name', newName, prevName);
         }
     }
 
@@ -26,7 +26,7 @@ const TableEntry = (props) => {
         const newCapital = e.target.value ? e.target.value : "No Capital";
         const prevCapital = capital;
         if(newCapital !== prevCapital){
-            props.editRegion(data._id, 'capital', newCapital);
+            props.editRegion(data._id, 'capital', newCapital, prevCapital);
         }
     }
 
@@ -35,7 +35,7 @@ const TableEntry = (props) => {
         const newLeader = e.target.value ? e.target.value : "No Leader";
         const prevLeader = leader;
         if(newLeader !== prevLeader){
-            props.editRegion(data._id, 'leader', newLeader);
+            props.editRegion(data._id, 'leader', newLeader, prevLeader);
         }
     }
 
@@ -50,7 +50,7 @@ const TableEntry = (props) => {
     }
 
     const handleDeleteRegion = () =>{
-        props.setShowDeleteRegion(data._id)
+        props.setShowDeleteRegion(data._id, props.index, data)
     }
 
     return (

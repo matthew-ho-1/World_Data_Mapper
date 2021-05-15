@@ -124,9 +124,8 @@ html {
 }
 
 .table-header-button-disabled{
-    padding: 0;
-    margin-left: 12px;
     cursor: default;
+    visibility: "hidden";
 }
 
 .table-header-buttons {

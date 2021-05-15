@@ -6,7 +6,7 @@ const LandmarkEntry = (props) => {
     const isApartOfRegion = props.data.includes(" - ") ? true : false
 
     const handleDelete = () =>{
-        props.setShowDeleteLandmark(props.region._id, props.data)
+        props.setShowDeleteLandmark(props.region._id, props.data, props.index)
     }
 
     const handleLandmarkEdit = (e) =>{

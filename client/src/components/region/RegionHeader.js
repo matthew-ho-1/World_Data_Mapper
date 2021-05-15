@@ -4,22 +4,23 @@ import { WButton, WRow, WCol } from 'wt-frontend';
 
 const regionHeader = (props) => {
     const clickDisabled = () => { };
-    const className = "region " + props.activeMapName;
-    const buttonStyle = props.disabled ? ' table-header-button-disabled ' : 'table-header-button ';
+
     const undoOptions = {
-        className: props.disabled || !props.canUndo ? ' table-header-button-disabled ' : 'table-header-button',
-        onClick: props.disabled || !props.canUndo  ? clickDisabled : props.undo,
-        wType: "texted", 
-        clickAnimation: props.disabled || !props.canUndo ? "" : "ripple-light",  
-        shape: "rounded"
+        className: !props.canUndo ? ' table-header-button-disabled ' : 'table-header-button',
+        onClick: !props.canUndo  ? clickDisabled : props.tpsUndo,
+        clickAnimation: !props.canUndo ? "" : "ripple-light",  
+        shape: "rounded",
+        wType: "texted",
+        style: {visibility: !props.canUndo ? "hidden" : "visible"}
     }
 
     const redoOptions = {
-        className: props.disabled || !props.canRedo ? ' table-header-button-disabled ' : 'table-header-button ',
-        onClick: props.disabled || !props.canRedo   ? clickDisabled : props.redo, 
-        wType: "texted", 
-        clickAnimation: props.disabled || !props.canRedo ? "" : "ripple-light" ,
-        shape: "rounded"
+        className: !props.canRedo ? ' table-header-button-disabled ' : 'table-header-button ',
+        onClick: !props.canRedo   ? clickDisabled : props.tpsRedo, 
+        clickAnimation: !props.canRedo ? "" : "ripple-light" ,
+        shape: "rounded",
+        wType: "texted",
+        style: {visibility: !props.canRedo ? "hidden" : "visible"}
     }
 
     return (
@@ -27,10 +28,10 @@ const regionHeader = (props) => {
             <WButton className="region-buttons" wType="texted" onClick = {props.addRegion} clickAnimation = "ripple-light" shape=  "rounded" style = {{marginLeft: "28px"}}>
                 <i className="material-icons" style = {{color: "#1ddbdb"}}>add_box</i>
             </WButton>
-            <WButton className="region-buttons" wType="texted"  clickAnimation = "ripple-light" shape=  "rounded">
+            <WButton {...undoOptions}>
                 <i className="material-icons md-24" style = {{color: "white"}}>undo</i>
             </WButton>
-            <WButton className="region-buttons" wType="texted" clickAnimation = "ripple-light" shape=  "rounded">
+            <WButton {...redoOptions}>
                 <i className="material-icons md-24" style = {{color: "white"}}>redo</i>
             </WButton>
             <div className = "region-text">Region Name: </div>

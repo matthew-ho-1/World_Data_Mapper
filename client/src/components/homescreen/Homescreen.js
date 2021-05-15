@@ -17,15 +17,16 @@ import React, { useState } 				from 'react';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide, WButton} from 'wt-frontend';
-import { UpdateListField_Transaction, 
-	SortItems_Transaction,
-	UpdateListItems_Transaction, 
-	ReorderItems_Transaction, 
-	EditItem_Transaction } 				from '../../utils/jsTPS';
+import {  SortRegion_Transaction,
+	UpdateRegion_Transaction, 
+	EditRegion_Transaction,
+    ChangeParent_Transaction,
+	UpdateLandmark_Transaction, 
+	EditLandmark_Transaction} 			from '../../utils/jsTPS';
 
 const Homescreen = (props) => {
 
-	const keyCombination = (e, callback) => {
+	const keyCombination = (e) => {
 		if(e.key === 'z' && e.ctrlKey) {
 			if(props.tps.hasTransactionToUndo()) {
 				tpsUndo();
@@ -61,7 +62,7 @@ const Homescreen = (props) => {
 	const [showNameMap, toggleShowNameMap]	= useState(false);
 	const [showRegionView, toggleRegionView] = useState(false);
 	const [selectedMap, setSelectedMap]		= useState("");
-	const [selectedRegion, setSelectedRegion] = useState("");
+	const [selectedRegion, setSelectedRegion] = useState([]);
 	const [selectedLandmark, setSelectedLandmark] = useState([])
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
@@ -129,6 +130,9 @@ const Homescreen = (props) => {
 		setActiveSubregion(subregion);
 		activeids.push(subregion._id);
 		activeRegions.push(subregion);
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 	}
 
 	const setAncestorRegion = (regionData) => {
@@ -157,15 +161,35 @@ const Homescreen = (props) => {
 		}
 		let opcode = 1;
 		let mapID = activeMap._id;
-		const { data } = await AddRegion({variables: {region:  newRegion, location: activeids, _id: mapID, index: -1}})
+		let regionID = newRegion._id;
+		let transaction = new UpdateRegion_Transaction(mapID, regionID, activeids, newRegion, opcode, AddRegion, DeleteRegion)
+		props.tps.addTransaction(transaction)
+		tpsRedo();
 	};
 
-	const deleteRegion = async (_id) => {
-		const { data } = await DeleteRegion({variables: {regionid: _id, _id: activeMap._id}})
+	const deleteRegion = async () => {
+		let mapID = activeMap._id;
+		let regionID = selectedRegion[0];
+		let index = selectedRegion[1];
+		let opcode = 0;
+		let delregion = selectedRegion[2];
+		let regionToDelete = {
+			_id: delregion._id,
+			parentid: delregion.parentid,
+			name: delregion.name,
+			capital: delregion.capital,
+			leader: delregion.leader,
+			landmarks: delregion.landmarks
+		}
+		let transaction = new UpdateRegion_Transaction(mapID, regionID, activeids, regionToDelete, opcode, AddRegion, DeleteRegion, index)
+		props.tps.addTransaction(transaction)
+		tpsRedo();
 	};
 
-	const editRegion = async (regionid, field, value) => {
-		const { data } = await UpdateRegion({variables: {regionid: regionid, _id: activeMap._id, field: field, value: value}})
+	const editRegion = async (regionid, field, newvalue, oldvalue) => {
+		let transaction = new EditRegion_Transaction(activeMap._id, regionid, field, newvalue, oldvalue, UpdateRegion)
+		props.tps.addTransaction(transaction);
+		tpsRedo();
 	};
 
 
@@ -182,9 +206,13 @@ const Homescreen = (props) => {
 	};
 
 	const sort = async (criteria) =>{
+		let prevSortRule = sortRule;
 		setSortRule(criteria);
 		let parentid = activeids[activeids.length - 1];
-		const { data } = await SortRegions({ variables: {_id: activeMap._id, criteria: criteria, parentid: parentid}})
+		let transaction = new SortRegion_Transaction(activeMap._id, criteria, prevSortRule, parentid, SortRegions);
+		console.log(transaction);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
  	}
 
 	const updateRegionParent = async (currid, newparent) =>{
@@ -195,35 +223,84 @@ const Homescreen = (props) => {
 	}
 
 	const addNewLandmark = async(landmark, regionid) =>{
-		const { data } = await AddRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid._id, landmark: landmark}})
-		let name = data.addRegionLandmark;
-		if(name === "error")
-			alert("Landmark Already Exists.")
+		let opcode = 1
+		let regions = MapData[0].regions;
+		const field = "landmarks";
+		let error = "";
+		regions.map(region => {
+				let tempLandmark = region[field];
+				for(let landmarkelem of tempLandmark){
+					if(landmarkelem.toLowerCase() === landmark.toLowerCase())
+						error = "found";
+				}
+		});
+		if(error !== "found"){
+			let transaction = new UpdateLandmark_Transaction(activeMap._id, regionid._id, landmark, opcode, AddRegionLandmark, DeleteRegionLandmark);
+			props.tps.addTransaction(transaction);
+			tpsRedo();
+		}
+		else
+			alert("Landmark Already Exists.");
 	}
 
 	const deleteLandmark = async() =>{
+		let opcode = 0;
 		let regionid = selectedLandmark[0];
 		let landmark = selectedLandmark[1];
+		let index = selectedLandmark[2];
+		let transaction = new UpdateLandmark_Transaction(activeMap._id, regionid, landmark, opcode, AddRegionLandmark, DeleteRegionLandmark, index);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
 		const { data } = await DeleteRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid, landmark: landmark}})
 	}
 
 	const updateLandmark = async(oldlandmark, newlandmark, regionid) =>{
-		const { data } = await UpdateRegionLandmark({ variables: {_id: activeMap._id, regionid: regionid, newlandmark:  newlandmark, oldlandmark: oldlandmark}})
+		const field = "landmarks";
+		let regions = MapData[0].regions;
+		let error = "";
+		regions.map(region => {
+				let tempLandmark = region[field];
+				for(let landmarkelem of tempLandmark){
+					if(landmarkelem.toLowerCase() === newlandmark.toLowerCase())
+						error = "found";
+				}
+		});
+		if(error !== "found"){
+			let transaction = new EditLandmark_Transaction(activeMap._id, regionid, field, oldlandmark, newlandmark, UpdateRegionLandmark)
+			props.tps.addTransaction(transaction);
+			tpsRedo();
+		}
+		else
+			alert("Landmark Already Exists");
 	}
 
 	const goToNextSibling = (nextSibling) =>{
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 		setRegion(nextSibling);
 		let regions = MapData[0].regions;
 		setSubregions(regions.filter(regionelem => regionelem.parentid === nextSibling._id))
 	}
 
 	const goToPrevSibling = (prevSibling) =>{
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 		setRegion(prevSibling)
 		let regions = MapData[0].regions;
 		setSubregions(regions.filter(regionelem => regionelem.parentid === prevSibling._id))
 	}
 
+	const resetActiveRegions = () =>{
+		activeRegions.length = 2;
+		activeids.length = 2;
+	}
+
 	const goToParent = (parent) =>{
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 		if(parent._id === activeMap._id){
 			activeRegions.length = 1;
 			activeids.length = 1;
@@ -249,14 +326,18 @@ const Homescreen = (props) => {
 		setSelectedMap(_id)
 	}
 
-	const setRegionToDelete = (_id) =>{
-		setSelectedRegion(_id);
+	const setRegionToDelete = (_id, index, region) =>{
+		selectedRegion.length = 0;
+		selectedRegion.push(_id);
+		selectedRegion.push(index);
+		selectedRegion.push(region);
 	}
 
-	const setLandmarkToDelete = (_id, landmark) =>{
+	const setLandmarkToDelete = (_id, landmark, index) =>{
 		selectedLandmark.length = 0;
 		selectedLandmark.push(_id);
 		selectedLandmark.push(landmark)
+		selectedLandmark.push(index);
 	}
 
 	const setInactive = () =>{
@@ -267,6 +348,9 @@ const Homescreen = (props) => {
 		setRegion({})
 		setListSubregions([])
 		setActiveRegions([])
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 	}
 
 	const setShowLogin = () => {
@@ -294,8 +378,8 @@ const Homescreen = (props) => {
 		toggleShowDeleteMap(!showDeleteMap)
 	};
 
-	const setShowDeleteRegion = (id) => {
-		setRegionToDelete(id)
+	const setShowDeleteRegion = (id, index, region) => {
+		setRegionToDelete(id, index, region)
 		toggleShowCreate(false);
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
@@ -304,8 +388,8 @@ const Homescreen = (props) => {
 		toggleShowDeleteRegion(!showDeleteRegion);
 	};
 
-	const setShowDeleteLandmark = (id, landmark) =>{
-		setLandmarkToDelete(id, landmark);
+	const setShowDeleteLandmark = (id, landmark, index) =>{
+		setLandmarkToDelete(id, landmark, index);
 		toggleShowCreate(false);
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
@@ -332,6 +416,9 @@ const Homescreen = (props) => {
 	}
 
 	const setShowRegionView = (data) =>{
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
 		setRegion(data);
 		let regions = MapData[0].regions;
 		let mapid = activeMap._id;
@@ -381,12 +468,14 @@ const Homescreen = (props) => {
 				<RegionViewerContents getRegion = {region} subregions = {subregions} activeMap = {activeMap} activeRegions = {activeRegions} setShowRegionView = {setShowRegionView}
 				updateRegionParent = {updateRegionParent} goToNextSibling = {goToNextSibling} goToPrevSibling = {goToPrevSibling} listSubregions = {listSubregions}
 				addNewLandmark = {addNewLandmark} MapData = {MapData} deleteLandmark = {deleteLandmark} setShowDeleteLandmark = {setShowDeleteLandmark}
-				updateLandmark = {updateLandmark}></RegionViewerContents>
+				updateLandmark = {updateLandmark} resetActiveRegions = {resetActiveRegions}
+				tpsUndo = {tpsUndo} tpsRedo = {tpsRedo} canUndo = {canUndo} canRedo = {canRedo}></RegionViewerContents>
 				:
 				<RegionContents 
 				 	activeMap = {activeMap} addRegion = {addRegion} setShowRegionView = {setShowRegionView} loadNewSubregion = {loadNewSubregion}
 					 setShowDeleteRegion = {setShowDeleteRegion} activeSubregion = {activeSubregion} setShowRegionView = {setShowRegionView} 
-					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion} sort = {sort}>  
+					 loadNewSubregion = {loadNewSubregion} activeRegions = {activeRegions} editRegion = {editRegion} sort = {sort} 
+					 tpsUndo = {tpsUndo} tpsRedo = {tpsRedo} canUndo = {canUndo} canRedo = {canRedo}>  
 				</RegionContents>
 				:
 				<MapContents
@@ -409,7 +498,7 @@ const Homescreen = (props) => {
 
 			{
 				showDeleteRegion && (<DeleteRegionModal setShowDeleteRegion={setShowDeleteRegion} setShowDeletRegion = {setShowDeleteRegion} 
-					activeid = {selectedRegion} deleteRegion = {deleteRegion}></DeleteRegionModal>)
+				deleteRegion = {deleteRegion}></DeleteRegionModal>)
 			}
 
 			{

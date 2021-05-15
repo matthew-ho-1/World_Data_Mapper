@@ -74,20 +74,15 @@ module.exports = {
 			@returns {string} the objectID of the region or an error message
 		**/
 		addRegion: async(_, args) => {
-			const { _id, location, region , index } = args;
+			const { _id, region , index } = args;
 			const listId = new ObjectId(_id);
 			const objectId = new ObjectId();
 			const found = await Map.findOne({_id: listId});
 			if(!found) return ('region not found');
 			if(region._id === '') region._id = objectId;
 			const listRegions = found.regions;
-			if(location.length === 1){
-				if(index < 0) listRegions.push(region);
-				else listRegions.splice(index, 0, region);
-			}
-			else{
-				listRegions.push(region);
-			}
+			if(index < 0) listRegions.push(region);
+			else listRegions.splice(index, 0, region);
 			const updated = await Map.updateOne({_id: listId}, {regions: listRegions});
 			if(updated) return (region._id)
 			else return ('Could not add region');
@@ -98,7 +93,7 @@ module.exports = {
 							 array on failure
 		**/
 		deleteRegion: async (_, args) => {
-			const  { _id, regionid } = args;
+			const  { _id, regionid} = args;
 			const listId = new ObjectId(_id);
 			const found = await Map.findOne({_id: listId});
 			let listRegions = found.regions;
@@ -201,27 +196,19 @@ module.exports = {
 			@returns {string} the objectID of the region or an error message
 		**/
 		addRegionLandmark: async(_, args) => {
-			const { _id, regionid , landmark} = args;
+			const { _id, regionid , landmark, index} = args;
 			const listId = new ObjectId(_id);
 			const found = await Map.findOne({_id: listId});
 			let listRegions = found.regions;
 			const field = "landmarks";
 			let listLandmarks = [];
-			let error = "";
-			listRegions.map(region => {
-					let tempLandmark = region[field];
-					for(let landmarkelem of tempLandmark){
-						if(landmarkelem.toLowerCase() === landmark.toLowerCase())
-							error = "found";
-					}
-			});
-			if(error === "found"){ return "error"}
 			let baseid;
 			let regionname;
 			listRegions.map(region => {
 				if(region._id.toString() === regionid) {	
 					listLandmarks = region[field];
-					listLandmarks.push(landmark)
+					if(index < 0) listLandmarks.push(landmark)
+					else listLandmarks.splice(index, 0, landmark);
 					region[field] = listLandmarks;
 					baseid = region.parentid;
 					regionname = region.name;
@@ -231,7 +218,8 @@ module.exports = {
 				listRegions.map(region => {
 					if(region._id.toString() === baseid) {	
 						listLandmarks = region[field];
-						listLandmarks.push(landmark + " - " + regionname)
+						if(index < 0) listLandmarks.push(landmark + " - " + regionname)
+						else listLandmarks.splice(index, 0, (landmark + " - " + regionname));
 						region[field] = listLandmarks;
 						baseid = region.parentid;
 					}
@@ -299,14 +287,6 @@ module.exports = {
 			let error = "";
 			let baseid;
 			let regionname;
-			listRegions.map(region => {
-					let tempLandmark = region[field];
-					for(let landmarkelem of tempLandmark){
-						if(landmarkelem.toLowerCase() === newlandmark.toLowerCase())
-							error = "found";
-					}
-			});
-			if(error === "found"){ return "error"}
 			listRegions.map(region => {
 				if(region._id.toString() === regionid) {	
 					listLandmarks = region[field];

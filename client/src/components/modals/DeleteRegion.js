@@ -5,7 +5,7 @@ import { WModal, WMHeader, WMMain, WButton } from 'wt-frontend';
 const DeleteRegion= (props) => {
 
     const handleDelete = async () => {
-        props.deleteRegion(props.activeid);
+        props.deleteRegion();
         props.setShowDeleteRegion(false);
     }
 
