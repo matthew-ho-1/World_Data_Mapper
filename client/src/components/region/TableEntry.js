@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { WButton, WInput, WRow, WCol } from 'wt-frontend';
 
+export function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
 const TableEntry = (props) => {
     const { data } = props;
     const name = data.name;
     const capital = data.capital;
     const leader = data.leader;
     const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + ", ...";
+
+    const images = importAll(require.context('../Pictures/The World', false, /\.(png|jpe?g|svg)$/));
 
     const [editingName, toggleNameEdit] = useState(false);
     const [editingCapital, toggleCapitalEdit] = useState(false);
@@ -104,7 +112,9 @@ const TableEntry = (props) => {
                 }
             </WCol>
             <WCol size="2">
-        
+            {
+                <img src = {images[name + " Flag.png"]} alt = "Flag Not Found" style = {{paddingTop: "10px", width: "100px", height: "50px"}}/>
+            }   
             </WCol>
             <WCol size="3" onClick = {handleShowRegionView}>
                 {

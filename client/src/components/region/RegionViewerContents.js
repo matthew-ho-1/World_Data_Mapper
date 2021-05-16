@@ -2,7 +2,15 @@ import React, { useState }  from 'react';
 import { WLayout, WLHeader, WLMain, WButton, WSidebar, WCard, WLSide, WInput} from 'wt-frontend';
 import LandmarkContents from '../landmark/LandmarkContents';
 
+export function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
 const RegionViewerContents = (props) => {
+    const images = importAll(require.context('../Pictures/The World', false, /\.(png|jpe?g|svg)$/));
+
     const clickDisabled = () => { };
     const undoOptions = {
         className: !props.canUndo ? 'region-buttons-disabled' : 'region-buttons',
@@ -108,8 +116,10 @@ const RegionViewerContents = (props) => {
                         <i className="material-icons md-24" style = {{color: "white"}}>arrow_forward</i>
                     </WButton>
                 </WLHeader>
-                <WCard style = {{marginBottom: "50px", height: "400px", width: "500px"}}>
-                    Placeholder for Image
+                <WCard style = {{marginBottom: "50px", height: "400px", width: "500px", backgroundColor: "#32599c"}}>
+                {
+                    <img src = {images[props.getRegion.name + " Flag.png"]} alt = "Flag Not Found" style = {{paddingTop: "100px"}}/>
+                }
                 </WCard>
                 <div className = "region-info">
                         <div className = "Region Name" style = {{paddingBottom: "40px"}}>{name}</div>
