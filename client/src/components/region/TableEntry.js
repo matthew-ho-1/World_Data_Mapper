@@ -13,12 +13,15 @@ const TableEntry = (props) => {
     const capital = data.capital;
     const leader = data.leader;
     const landmarks = data.landmarks.length === 0 ? "No landmarks": data.landmarks[0] + ", ...";
-
+    let editing = props.index === props.indexChange ? props.editing : ""
+    
+    
     const images = importAll(require.context('../Pictures/The World', false, /\.(png|jpe?g|svg)$/));
 
     const [editingName, toggleNameEdit] = useState(false);
     const [editingCapital, toggleCapitalEdit] = useState(false);
     const [editingLeader, toggleLeaderEdit] = useState(false);
+
 
     const handleNameEdit = (e) =>{
         toggleNameEdit(false);
@@ -44,6 +47,58 @@ const TableEntry = (props) => {
         const prevLeader = leader;
         if(newLeader !== prevLeader){
             props.editRegion(data._id, 'leader', newLeader, prevLeader);
+        }
+    }
+
+    const handleMoveLeft = (e) =>{
+        if(editingCapital){
+           handleCapitalEdit(e);
+           toggleNameEdit(!editingName)
+        }
+        else if(editingLeader){
+            handleLeaderEdit(e)
+            toggleCapitalEdit(!editingCapital);
+        }
+    }
+
+    const handleMoveRight = (e) =>{
+        if(editingName){
+            handleNameEdit(e);
+            toggleCapitalEdit(!editingCapital)
+         }
+         else if(editingCapital){
+             handleCapitalEdit(e)
+             toggleLeaderEdit(!editingLeader);
+         }
+    }
+
+    const handleMoveUp = (e) =>{
+        if(editingName){
+            handleNameEdit(e);
+            props.handleMoveUp(props.index - 1, "name");
+         }
+         else if(editingCapital){
+             handleCapitalEdit(e)
+             props.handleMoveUp(props.index - 1, "capital");
+         }
+         else if(editingLeader){
+            handleLeaderEdit(e)
+            props.handleMoveUp(props.index - 1, "leader");
+        }
+    }
+
+    const handleMoveDown = (e) =>{
+        if(editingName){
+            handleNameEdit(e);
+            props.handleMoveDown(props.index + 1, "name");
+         }
+         else if(editingCapital){
+             handleCapitalEdit(e)
+             props.handleMoveDown(props.index + 1, "capital");
+         }
+         else if(editingLeader){
+            handleLeaderEdit(e)
+            props.handleMoveDown(props.index + 1, "leader");
         }
     }
 
@@ -78,7 +133,8 @@ const TableEntry = (props) => {
                     editingName || name === ' ' ?
                     <WInput
                     className='table-input' onBlur={handleNameEdit}
-                    onKeyDown={(e) => {if(e.keyCode === 13) handleNameEdit(e)}}
+                    onKeyDown={(e) => {if(e.keyCode === 13) handleNameEdit(e); if(e.keyCode === 39) handleMoveRight(e); if(e.keyCode === 40) handleMoveDown(e);
+                     if(e.keyCode === 38) handleMoveUp(e);} }
                     autoFocus={true} defaultValue={name} type='text'
                     inputClass="table-input-class"/>
                     :
@@ -91,7 +147,8 @@ const TableEntry = (props) => {
                      editingCapital || capital === ' ' ?
                      <WInput
                      className='table-input' onBlur={handleCapitalEdit}
-                     onKeyDown={(e) => {if(e.keyCode === 13) handleCapitalEdit(e)}}
+                     onKeyDown={(e) => {if(e.keyCode === 13) handleCapitalEdit(e); if(e.keyCode === 37) handleMoveLeft(e); if(e.keyCode === 39) handleMoveRight(e);
+                        if(e.keyCode === 40) handleMoveDown(e); if(e.keyCode === 38) handleMoveUp(e);}}
                      autoFocus={true} defaultValue={capital} type='text'
                      inputClass="table-input-class"/>
                      :
@@ -104,7 +161,8 @@ const TableEntry = (props) => {
                     editingLeader || leader === ' ' ?
                      <WInput
                      className='table-input' onBlur={handleLeaderEdit}
-                     onKeyDown={(e) => {if(e.keyCode === 13) handleLeaderEdit(e)}}
+                     onKeyDown={(e) => {if(e.keyCode === 13) handleLeaderEdit(e); if(e.keyCode === 37) handleMoveLeft(e);
+                        if(e.keyCode === 40) handleMoveDown(e); if(e.keyCode === 38) handleMoveUp(e);}}
                      autoFocus={true} defaultValue={leader} type='text'
                      inputClass="table-input-class"/>
                      :

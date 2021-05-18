@@ -64,7 +64,7 @@ const RegionViewerContents = (props) => {
     const handleParentEdit = (e) =>{
         // let newParent = e.target.value;
         // let oldParent = parent;
-        // toggleParentEdit(false);
+        toggleParentEdit(false);
         // if(newParent !== oldParent){
         //     props.updateRegionParent(props.getRegion._id, newParent);
         //     props.resetActiveRegions();
